@@ -7,6 +7,7 @@ import { Plus, Trash2, ArrowRight, PackageCheck, Check, ChevronsUpDown } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { PrintSizeButton, type PrintSize } from "@/components/print-size-select";
+import { fetchAll } from "@/lib/fetch-all";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,8 +75,9 @@ function StockTransfersPage() {
     queryKey: ["biz-products-basic", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("id, name").eq("business_id", businessId!).order("name").limit(1000);
-      return (data ?? []) as Product[];
+      return await fetchAll<Product>(() =>
+        supabase.from("products").select("id, name").eq("business_id", businessId!).order("name"),
+      );
     },
   });
 
@@ -83,12 +85,14 @@ function StockTransfersPage() {
     queryKey: ["biz-variations-basic", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("variations")
-        .select("id, product_id, name, default_purchase_price, products!inner(business_id)")
-        .eq("products.business_id", businessId!)
-        .order("name");
-      return (data ?? []) as unknown as Variation[];
+      const rows = await fetchAll<any>(() =>
+        supabase
+          .from("variations")
+          .select("id, product_id, name, default_purchase_price, products!inner(business_id)")
+          .eq("products.business_id", businessId!)
+          .order("name"),
+      );
+      return rows as unknown as Variation[];
     },
   });
 
