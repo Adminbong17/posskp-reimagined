@@ -10,33 +10,37 @@ export function printHrmReport(opts: {
   rows: (string | number)[][];
   footer?: (string | number)[][];
   filename?: string;
+  size?: "A4" | "80mm" | "58mm";
 }) {
-  const { title, subtitle, business, columns, rows, footer = [], filename } = opts;
+  const { title, subtitle, business, columns, rows, footer = [], filename, size = "A4" } = opts;
+  const pageSize = size === "A4" ? "A4" : size === "80mm" ? "80mm auto" : "58mm auto";
+  const pageMargin = size === "A4" ? "12mm" : "3mm 2mm";
+  const width = size === "A4" ? "210mm" : size === "80mm" ? "80mm" : "58mm";
+  const fontSize = size === "A4" ? "12px" : size === "80mm" ? "10px" : "9px";
 
   const styleId = "hrm-print-style";
-  if (!document.getElementById(styleId)) {
-    const st = document.createElement("style");
-    st.id = styleId;
-    st.textContent = `
-      #hrm-print-page { display:none; }
-      @media print {
-        @page { size: A4; margin: 12mm; }
-        body * { visibility: hidden !important; }
-        #hrm-print-page, #hrm-print-page * { visibility: visible !important; }
-        #hrm-print-page { display:block !important; position:absolute; left:0; top:0; width:100%; background:#fff; color:#000; }
-      }
-      .receipt-preview-clone.hrm-report { display:block !important; width: 210mm; font-family: ui-sans-serif, system-ui, Arial, sans-serif; color:#000; }
-      .receipt-preview-clone.hrm-report table { width:100%; border-collapse: collapse; font-size: 12px; }
-      .receipt-preview-clone.hrm-report th, .receipt-preview-clone.hrm-report td { border:1px solid #000; padding: 4px 6px; }
-      .receipt-preview-clone.hrm-report th { background:#eee; text-align:left; }
-    `;
-    document.head.appendChild(st);
-  }
+  document.getElementById(styleId)?.remove();
+  const st = document.createElement("style");
+  st.id = styleId;
+  st.textContent = `
+    #hrm-print-page { display:none; }
+    @media print {
+      @page { size: ${pageSize}; margin: ${pageMargin}; }
+      body * { visibility: hidden !important; }
+      #hrm-print-page, #hrm-print-page * { visibility: visible !important; }
+      #hrm-print-page { display:block !important; position:absolute; left:0; top:0; width:100%; background:#fff; color:#000; }
+    }
+    .receipt-preview-clone.hrm-report { display:block !important; width: ${width}; font-family: ui-sans-serif, system-ui, Arial, sans-serif; color:#000; }
+    .receipt-preview-clone.hrm-report table { width:100%; border-collapse: collapse; font-size: ${fontSize}; }
+    .receipt-preview-clone.hrm-report th, .receipt-preview-clone.hrm-report td { border:1px solid #000; padding: 3px 4px; }
+    .receipt-preview-clone.hrm-report th { background:#eee; text-align:left; }
+  `;
+  document.head.appendChild(st);
 
   const page = document.createElement("div");
   page.id = "hrm-print-page";
   page.className = "hrm-report";
-  page.style.cssText = "font-family:ui-sans-serif,system-ui,Arial,sans-serif;color:#000;background:#fff;padding:8px;";
+  page.style.cssText = `font-family:ui-sans-serif,system-ui,Arial,sans-serif;color:#000;background:#fff;padding:8px;width:${width};font-size:${fontSize};`;
 
   const align = (a?: string) => a === "right" ? "right" : a === "center" ? "center" : "left";
   const esc = (s: any) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] as string));
