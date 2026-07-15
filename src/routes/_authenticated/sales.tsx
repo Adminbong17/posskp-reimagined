@@ -37,7 +37,7 @@ function SalesPage() {
   const { data: business } = useCurrentBusiness();
   const qc = useQueryClient();
   const [printingId, setPrintingId] = useState<string | null>(null);
-  const [printWidth, setPrintWidth] = useState<"58" | "80">("80");
+  const [printWidth, setPrintWidth] = useState<"58" | "80" | "A4">("80");
   const [range, setRange] = useState<RangeKey>("30d");
   const [customFrom, setCustomFrom] = useState<string>("");
   const [customTo, setCustomTo] = useState<string>("");
@@ -246,10 +246,11 @@ function SalesPage() {
           <p className="text-sm text-muted-foreground">All sales transactions from POS.</p>
         </div>
         <div className="flex items-center gap-2">
-          <select value={printWidth} onChange={(e) => setPrintWidth(e.target.value as "58" | "80")}
+          <select value={printWidth} onChange={(e) => setPrintWidth(e.target.value as "58" | "80" | "A4")}
             className="h-9 rounded-lg border border-border bg-input px-2 text-sm">
             <option value="80">80mm</option>
             <option value="58">58mm</option>
+            <option value="A4">A4</option>
           </select>
           <Button asChild>
             <Link to="/pos">
