@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { toast } from "sonner";
 import { Eye, Plus, Printer, Trash2, X } from "lucide-react";
+import { PrintSizeButton } from "@/components/print-size-select";
 import { fetchAll } from "@/lib/fetch-all";
 
 export const Route = createFileRoute("/_authenticated/products/stock-adjustments")({
@@ -122,9 +123,7 @@ function StockAdjustments() {
                     <button onClick={() => setViewId(r.id)} title="View" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border hover:bg-muted/50">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button onClick={() => printAdjustment(r.id)} title="Print" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border hover:bg-muted/50">
-                      <Printer className="h-4 w-4" />
-                    </button>
+                    <PrintSizeButton label="" onPrint={(size) => printAdjustment(r.id, size)} />
                     <button
                       onClick={() => { if (confirm(`Delete adjustment ${r.ref_no}? Stock will be reversed.`)) del.mutate(r); }}
                       title="Delete"
@@ -178,9 +177,7 @@ function ViewAdjustmentDialog({ id, onClose }: { id: string; onClose: () => void
         <div className="flex items-center justify-between border-b border-border/60 px-5 py-3">
           <h3 className="text-sm font-semibold">Adjustment {header.ref_no}</h3>
           <div className="flex items-center gap-2">
-            <button onClick={() => printAdjustment(id)} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs">
-              <Printer className="h-3.5 w-3.5" /> Print
-            </button>
+            <PrintSizeButton onPrint={(size) => printAdjustment(id, size)} />
             <button onClick={onClose} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-muted/50"><X className="h-4 w-4" /></button>
           </div>
         </div>
