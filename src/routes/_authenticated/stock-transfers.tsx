@@ -6,6 +6,7 @@ import { Plus, Trash2, ArrowRight, PackageCheck } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { PrintSizeButton, type PrintSize } from "@/components/print-size-select";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,6 +183,12 @@ function StockTransfersPage() {
                         <PackageCheck className="mr-1 h-3.5 w-3.5" /> Receive
                       </Button>
                     )}
+                    {(t.status === "in_transit" || t.status === "received") && (
+                      <PrintSizeButton
+                        label=""
+                        onPrint={(size) => printTransfer(t.id, size, business?.name ?? "Stock Transfer", locations.data ?? [])}
+                      />
+                    )}
                     <Button size="sm" variant="ghost" onClick={() => { if (confirm("Delete this transfer?")) del.mutate(t.id); }}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -355,4 +362,115 @@ function NewTransferDialog({
       </DialogFooter>
     </DialogContent>
   );
+}
+
+function escapeHtml(s: string) {
+  return String(s ?? "").replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]!));
+}
+
+async function printTransfer(id: string, size: PrintSize, businessName: string, locs: Location[]) {
+  try {
+    const { data: header, error: e1 } = await supabase
+      .from("stock_transfers")
+      .select("id, ref_no, transfer_date, status, shipping_charges, additional_notes, total_amount, from_location_id, to_location_id")
+      .eq("id", id)
+      .maybeSingle();
+    if (e1) throw e1;
+    if (!header) throw new Error("Transfer not found");
+
+    const { data: lineRows, error: e2 } = await supabase
+      .from("stock_transfer_lines")
+      .select("quantity, unit_cost, products(name, sku), variations(name, sub_sku)")
+      .eq("transfer_id", id);
+    if (e2) throw e2;
+
+    const locName = (lid: string) => locs.find((l) => l.id === lid)?.name ?? "—";
+    const statusLabel = header.status === "received" ? "RECEIVED" : header.status === "in_transit" ? "IN TRANSIT" : String(header.status).toUpperCase();
+    const linesTotal = (lineRows ?? []).reduce((s: number, l: any) => s + Number(l.quantity || 0) * Number(l.unit_cost || 0), 0);
+
+    const rowsHtml = (lineRows ?? []).map((l: any) => {
+      const pname = l.products?.name ?? "";
+      const vname = l.variations?.name && l.variations.name !== "DUMMY" ? ` — ${l.variations.name}` : "";
+      const code = l.variations?.sub_sku || l.products?.sku || "";
+      return `<tr>
+        <td>${escapeHtml(pname + vname)}${code ? `<div style="font-size:11px;color:#555">${escapeHtml(code)}</div>` : ""}</td>
+        <td style="text-align:right">${Number(l.quantity).toFixed(2)}</td>
+        <td style="text-align:right">${Number(l.unit_cost).toFixed(2)}</td>
+        <td style="text-align:right">${(Number(l.quantity) * Number(l.unit_cost)).toFixed(2)}</td>
+      </tr>`;
+    }).join("");
+
+    const fmtDT = (d: string) => new Date(d).toLocaleString();
+    const bodyHtml = `
+      <h1>${escapeHtml(businessName)}</h1>
+      <h2 style="font-size:16px;margin:12px 0 0">Stock Transfer — ${statusLabel}</h2>
+      <div class="meta">
+        <div><b>Ref:</b> ${escapeHtml(header.ref_no ?? "—")}</div>
+        <div><b>Date:</b> ${escapeHtml(fmtDT(header.transfer_date))}</div>
+        <div><b>From:</b> ${escapeHtml(locName(header.from_location_id))}</div>
+        <div><b>To:</b> ${escapeHtml(locName(header.to_location_id))}</div>
+        ${header.additional_notes ? `<div style="grid-column:1/-1"><b>Notes:</b> ${escapeHtml(header.additional_notes)}</div>` : ""}
+      </div>
+      <table>
+        <thead><tr><th>Product</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit Cost</th><th style="text-align:right">Subtotal</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div class="totals">
+        <div>Lines total: ${linesTotal.toFixed(2)}</div>
+        <div>Shipping: ${Number(header.shipping_charges).toFixed(2)}</div>
+        <div class="grand">Grand total: ${Number(header.total_amount).toFixed(2)}</div>
+      </div>
+      <div class="sign">
+        <div><div class="line"></div>Sender signature</div>
+        <div><div class="line"></div>Receiver signature</div>
+      </div>`;
+
+    const printId = "transfer-print-page";
+    const styleId = "transfer-print-style";
+    document.getElementById(printId)?.remove();
+    document.getElementById(styleId)?.remove();
+
+    const style = document.createElement("style");
+    style.id = styleId;
+    const pageSize = size === "A4" ? "A4" : size === "80mm" ? "80mm auto" : "58mm auto";
+    const pageMargin = size === "A4" ? "12mm" : "3mm 2mm";
+    const width = size === "A4" ? "210mm" : size === "80mm" ? "80mm" : "58mm";
+    const fs = size === "A4" ? "13px" : size === "80mm" ? "11px" : "10px";
+    style.textContent = `
+      #${printId} { font-family: system-ui, -apple-system, Arial, sans-serif; color:#000; background:#fff; padding:${size === "A4" ? "24px" : "6px"}; width:${width}; max-width:100%; box-sizing:border-box; font-size:${fs}; }
+      #${printId} * { box-sizing: border-box; }
+      #${printId} h1 { font-size:${size === "A4" ? "20px" : "14px"}; margin:0 0 4px; }
+      #${printId} table { width:100%; border-collapse: collapse; margin-top:12px; font-size:${fs}; }
+      #${printId} th, #${printId} td { border-bottom:1px solid #ddd; padding:${size === "A4" ? "6px 8px" : "3px 4px"}; text-align:left; color:#000; background:#fff; }
+      #${printId} th { background:#f4f4f4 !important; }
+      #${printId} .meta { margin-top:8px; display:grid; grid-template-columns: ${size === "A4" ? "1fr 1fr" : "1fr"}; gap:4px; font-size:${fs}; }
+      #${printId} .totals { margin-top:12px; text-align:right; }
+      #${printId} .totals .grand { font-weight:700; font-size:14px; margin-top:4px; }
+      #${printId} .sign { margin-top:${size === "A4" ? "40px" : "20px"}; display:grid; grid-template-columns: ${size === "A4" ? "1fr 1fr" : "1fr"}; gap:24px; font-size:${fs}; }
+      #${printId} .sign .line { border-top:1px solid #000; margin-bottom:4px; height:${size === "A4" ? "32px" : "16px"}; }
+      @page { size: ${pageSize}; margin: ${pageMargin}; }
+      @media print {
+        html, body { background:#fff !important; color:#000 !important; margin:0 !important; padding:0 !important; }
+        body > *:not(#${printId}) { display:none !important; visibility:hidden !important; }
+        #${printId} { position:static !important; padding:0 !important; }
+      }
+    `;
+    const printPage = document.createElement("div");
+    printPage.id = printId;
+    printPage.innerHTML = bodyHtml;
+    printPage.style.cssText = "position:fixed;left:0;top:0;z-index:-1;opacity:0;pointer-events:none;";
+    document.head.appendChild(style);
+    document.body.appendChild(printPage);
+
+    const cleanup = () => {
+      printPage.remove();
+      style.remove();
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+    const { showPrintPreview } = await import("@/lib/print-preview");
+    showPrintPreview({ printPage, cleanup, filename: `transfer-${header.ref_no ?? id.slice(0, 8)}` });
+  } catch (e: any) {
+    toast.error(e.message ?? "Print failed");
+  }
 }
