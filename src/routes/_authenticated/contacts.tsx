@@ -47,11 +47,14 @@ const emptyForm = {
   opening_balance: 0,
 };
 
+type LedgerSize = "A4" | "80mm" | "58mm";
+
 function printLedger(
   c: Contact,
   business: any,
   totals: { opening: number; sell: number; sellPaid: number; purchase: number; purchasePaid: number; netDue: number },
   rows: any[],
+  size: LedgerSize = "A4",
 ) {
   const bizName = business?.name ?? "QweekPOS";
   const addr = [business?.address_line_1, business?.city, business?.state].filter(Boolean).join(", ");
@@ -101,21 +104,26 @@ function printLedger(
 
   const style = document.createElement("style");
   style.id = styleId;
+  const pageSize = size === "A4" ? "A4" : size === "80mm" ? "80mm auto" : "58mm auto";
+  const pageMargin = size === "A4" ? "10mm" : "3mm 2mm";
+  const width = size === "A4" ? "210mm" : size === "80mm" ? "80mm" : "58mm";
+  const fontSize = size === "A4" ? "12px" : size === "80mm" ? "11px" : "10px";
+  const gridCols = size === "A4" ? "repeat(5,1fr)" : "repeat(2,1fr)";
   style.textContent = `
-    #${printId} { font-family: Arial, sans-serif; color: #000; background: #fff; padding: 20px; font-size: 12px; width: 210mm; max-width: 100%; box-sizing: border-box; }
+    #${printId} { font-family: Arial, sans-serif; color: #000; background: #fff; padding: ${size === "A4" ? "20px" : "6px"}; font-size: ${fontSize}; width: ${width}; max-width: 100%; box-sizing: border-box; }
     #${printId} *{ box-sizing: border-box; }
-    #${printId} h1{font-size:18px;margin:0}
-    #${printId} h2{font-size:14px;margin:12px 0 6px}
+    #${printId} h1{font-size:${size === "A4" ? "18px" : "14px"};margin:0}
+    #${printId} h2{font-size:${size === "A4" ? "14px" : "12px"};margin:8px 0 4px}
     #${printId} .head{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
-    #${printId} .meta{display:flex;justify-content:space-between;margin-bottom:10px}
+    #${printId} .meta{display:flex;justify-content:space-between;gap:6px;margin-bottom:10px;flex-wrap:wrap}
     #${printId} .box{border:1px solid #000;padding:6px 8px}
-    #${printId} .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+    #${printId} .grid{display:grid;grid-template-columns:${gridCols};gap:6px;margin:10px 0}
     #${printId} table{width:100%;border-collapse:collapse;margin-top:8px}
-    #${printId} th,#${printId} td{border:1px solid #000;padding:5px 6px;text-align:left;color:#000;background:#fff}
+    #${printId} th,#${printId} td{border:1px solid #000;padding:${size === "A4" ? "5px 6px" : "3px 4px"};text-align:left;color:#000;background:#fff}
     #${printId} th{background:#eee !important}
     #${printId} .r{text-align:right}
     #${printId} .tot{font-weight:bold;font-size:14px}
-    @page { size: A4; margin: 10mm; }
+    @page { size: ${pageSize}; margin: ${pageMargin}; }
     @media print {
       html, body { background:#fff !important; color:#000 !important; margin:0 !important; padding:0 !important; }
       body > *:not(#${printId}) { display:none !important; visibility:hidden !important; }
