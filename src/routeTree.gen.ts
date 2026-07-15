@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ScanSessionIdRouteImport } from './routes/scan.$sessionId'
+import { Route as AuthenticatedStockTransfersRouteImport } from './routes/_authenticated/stock-transfers'
 import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
@@ -84,6 +85,12 @@ const ScanSessionIdRoute = ScanSessionIdRouteImport.update({
   path: '/scan/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStockTransfersRoute =
+  AuthenticatedStockTransfersRouteImport.update({
+    id: '/stock-transfers',
+    path: '/stock-transfers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
@@ -388,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/setup': typeof AuthenticatedSetupRoute
+  '/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
   '/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/crm/followups': typeof AuthenticatedCrmFollowupsRoute
@@ -437,6 +445,7 @@ export interface FileRoutesByTo {
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
   '/setup': typeof AuthenticatedSetupRoute
+  '/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
   '/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/crm/followups': typeof AuthenticatedCrmFollowupsRoute
@@ -495,6 +504,7 @@ export interface FileRoutesById {
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
+  '/_authenticated/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
   '/_authenticated/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/_authenticated/crm/followups': typeof AuthenticatedCrmFollowupsRoute
@@ -553,6 +563,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/settings'
     | '/setup'
+    | '/stock-transfers'
     | '/scan/$sessionId'
     | '/crm/campaigns'
     | '/crm/followups'
@@ -602,6 +613,7 @@ export interface FileRouteTypes {
     | '/purchases'
     | '/sales'
     | '/setup'
+    | '/stock-transfers'
     | '/scan/$sessionId'
     | '/crm/campaigns'
     | '/crm/followups'
@@ -659,6 +671,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales'
     | '/_authenticated/settings'
     | '/_authenticated/setup'
+    | '/_authenticated/stock-transfers'
     | '/scan/$sessionId'
     | '/_authenticated/crm/campaigns'
     | '/_authenticated/crm/followups'
@@ -733,6 +746,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/scan/$sessionId'
       preLoaderRoute: typeof ScanSessionIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/stock-transfers': {
+      id: '/_authenticated/stock-transfers'
+      path: '/stock-transfers'
+      fullPath: '/stock-transfers'
+      preLoaderRoute: typeof AuthenticatedStockTransfersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/setup': {
       id: '/_authenticated/setup'
@@ -1275,6 +1295,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
+  AuthenticatedStockTransfersRoute: typeof AuthenticatedStockTransfersRoute
   AuthenticatedSalesIdEditRoute: typeof AuthenticatedSalesIdEditRoute
 }
 
@@ -1295,6 +1316,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,
+  AuthenticatedStockTransfersRoute: AuthenticatedStockTransfersRoute,
   AuthenticatedSalesIdEditRoute: AuthenticatedSalesIdEditRoute,
 }
 
