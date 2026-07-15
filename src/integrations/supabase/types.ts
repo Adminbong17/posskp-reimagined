@@ -14,6 +14,126 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_transactions: {
+        Row: {
+          account_id: string
+          amount: number
+          business_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          linked_account_id: string | null
+          note: string | null
+          reference_id: string | null
+          reference_type: string | null
+          tx_date: string
+          tx_type: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          linked_account_id?: string | null
+          note?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          tx_date?: string
+          tx_type: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          linked_account_id?: string | null
+          note?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          tx_date?: string
+          tx_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_transactions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_transactions_linked_account_id_fkey"
+            columns: ["linked_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      accounts: {
+        Row: {
+          account_number: string | null
+          account_type: string
+          business_id: string
+          created_at: string
+          created_by: string | null
+          current_balance: number
+          id: string
+          is_active: boolean
+          name: string
+          note: string | null
+          opening_balance: number
+          updated_at: string
+        }
+        Insert: {
+          account_number?: string | null
+          account_type?: string
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          current_balance?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          note?: string | null
+          opening_balance?: number
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string | null
+          account_type?: string
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_balance?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          note?: string | null
+          opening_balance?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_permissions: {
         Row: {
           description: string | null
@@ -2055,6 +2175,128 @@ export type Database = {
           },
         ]
       }
+      stock_transfer_lines: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          transfer_id: string
+          unit_cost: number
+          variation_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          transfer_id: string
+          unit_cost?: number
+          variation_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          transfer_id?: string
+          unit_cost?: number
+          variation_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transfer_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfer_lines_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "stock_transfers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfer_lines_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_transfers: {
+        Row: {
+          additional_notes: string | null
+          business_id: string
+          created_at: string
+          created_by: string | null
+          from_location_id: string
+          id: string
+          ref_no: string | null
+          shipping_charges: number
+          status: string
+          to_location_id: string
+          total_amount: number
+          transfer_date: string
+          updated_at: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          from_location_id: string
+          id?: string
+          ref_no?: string | null
+          shipping_charges?: number
+          status?: string
+          to_location_id: string
+          total_amount?: number
+          transfer_date?: string
+          updated_at?: string
+        }
+        Update: {
+          additional_notes?: string | null
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          from_location_id?: string
+          id?: string
+          ref_no?: string | null
+          shipping_charges?: number
+          status?: string
+          to_location_id?: string
+          total_amount?: number
+          transfer_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transfers_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_from_location_id_fkey"
+            columns: ["from_location_id"]
+            isOneToOne: false
+            referencedRelation: "business_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_to_location_id_fkey"
+            columns: ["to_location_id"]
+            isOneToOne: false
+            referencedRelation: "business_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tax_group_sub_taxes: {
         Row: {
           sub_tax_id: string
@@ -2709,11 +2951,13 @@ export type Database = {
         Returns: string
       }
       create_purchase: { Args: { _payload: Json }; Returns: string }
+      create_stock_transfer: { Args: { _payload: Json }; Returns: string }
       current_user_role_name: {
         Args: { _business_id: string }
         Returns: string
       }
       delete_sale: { Args: { _id: string }; Returns: undefined }
+      delete_stock_transfer: { Args: { _id: string }; Returns: undefined }
       has_permission: {
         Args: { _business_id: string; _permission: string; _user_id: string }
         Returns: boolean
@@ -2725,6 +2969,11 @@ export type Database = {
       is_business_owner: {
         Args: { _business_id: string; _user_id: string }
         Returns: boolean
+      }
+      receive_stock_transfer: { Args: { _id: string }; Returns: undefined }
+      transfer_between_accounts: {
+        Args: { _amount: number; _from: string; _note: string; _to: string }
+        Returns: undefined
       }
       update_purchase: {
         Args: { _id: string; _payload: Json }

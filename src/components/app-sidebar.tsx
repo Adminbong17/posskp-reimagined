@@ -26,14 +26,14 @@ const sections = [
       { to: "/products", label: "Products", icon: Package, enabled: true, key: "products" },
       { to: "/files", label: "Files", icon: FolderArchive, enabled: true, key: "files" },
       { to: "/contacts", label: "Contacts", icon: Users, enabled: true, key: "contacts" },
-      { to: "/stock-transfers", label: "Stock Transfers", icon: ClipboardList, enabled: false, key: "stock-transfers" },
+      { to: "/stock-transfers", label: "Stock Transfers", icon: ClipboardList, enabled: true, key: "stock-transfers" },
     ],
   },
   {
     label: "Finance",
     items: [
       { to: "/expenses", label: "Expenses", icon: Wallet, enabled: true, key: "expenses" },
-      { to: "/accounts", label: "Accounts", icon: BookOpen, enabled: false, key: "accounts" },
+      { to: "/accounts", label: "Accounts", icon: BookOpen, enabled: true, key: "accounts" },
     ],
   },
   {
