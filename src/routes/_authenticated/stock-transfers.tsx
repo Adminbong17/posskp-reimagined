@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowRight, PackageCheck } from "lucide-react";
+import { Plus, Trash2, ArrowRight, PackageCheck, Check, ChevronsUpDown } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
@@ -16,6 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/stock-transfers")({
   head: () => ({ meta: [{ title: "Stock Transfers — QweekPOS" }] }),
@@ -313,10 +316,11 @@ function NewTransferDialog({
                 return (
                   <TableRow key={i}>
                     <TableCell>
-                      <Select value={l.product_id} onValueChange={(v) => updateLine(i, { product_id: v, variation_id: "" })}>
-                        <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <ProductCombobox
+                        products={products}
+                        value={l.product_id}
+                        onChange={(v) => updateLine(i, { product_id: v, variation_id: "" })}
+                      />
                     </TableCell>
                     <TableCell>
                       <Select
@@ -361,6 +365,51 @@ function NewTransferDialog({
         <Button onClick={() => create.mutate()} disabled={create.isPending}>Create Transfer</Button>
       </DialogFooter>
     </DialogContent>
+  );
+}
+
+function ProductCombobox({
+  products, value, onChange,
+}: { products: Product[]; value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const selected = products.find((p) => p.id === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between font-normal", !selected && "text-muted-foreground")}
+        >
+          <span className="truncate">{selected?.name ?? "Product"}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[280px] p-0" align="start">
+        <Command
+          filter={(itemValue, search) => (itemValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0)}
+        >
+          <CommandInput placeholder="Search product..." />
+          <CommandList>
+            <CommandEmpty>No products found.</CommandEmpty>
+            <CommandGroup>
+              {products.map((p) => (
+                <CommandItem
+                  key={p.id}
+                  value={p.name}
+                  onSelect={() => { onChange(p.id); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === p.id ? "opacity-100" : "opacity-0")} />
+                  {p.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
