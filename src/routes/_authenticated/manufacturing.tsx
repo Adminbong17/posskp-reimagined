@@ -604,6 +604,7 @@ function OrdersTab({ businessId }: { businessId: string }) {
       {completing && (
         <Dialog open onOpenChange={(v) => !v && setCompleting(null)}>
           <CompleteOrderDialog
+            businessId={businessId}
             order={completing}
             onDone={() => {
               setCompleting(null);
@@ -760,9 +761,17 @@ function NewOrderDialog({ businessId, onDone }: { businessId: string; onDone: ()
   );
 }
 
-function CompleteOrderDialog({ order, onDone }: { order: Order; onDone: () => void }) {
+function CompleteOrderDialog({
+  businessId,
+  order,
+  onDone,
+}: {
+  businessId: string;
+  order: Order;
+  onDone: () => void;
+}) {
   const complete = useServerFn(completeProductionOrder);
-  const { data: variations = [] } = useVariations();
+  const { data: variations = [] } = useVariations(businessId);
 
   const bomLines = order.bom?.lines ?? [];
   const scale = order.planned_qty || 1;
