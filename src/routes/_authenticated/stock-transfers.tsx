@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowRight, PackageCheck } from "lucide-react";
+import { Plus, Trash2, ArrowRight, PackageCheck, Check, ChevronsUpDown } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
@@ -16,6 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/stock-transfers")({
   head: () => ({ meta: [{ title: "Stock Transfers — QweekPOS" }] }),
@@ -313,10 +316,11 @@ function NewTransferDialog({
                 return (
                   <TableRow key={i}>
                     <TableCell>
-                      <Select value={l.product_id} onValueChange={(v) => updateLine(i, { product_id: v, variation_id: "" })}>
-                        <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <ProductCombobox
+                        products={products}
+                        value={l.product_id}
+                        onChange={(v) => updateLine(i, { product_id: v, variation_id: "" })}
+                      />
                     </TableCell>
                     <TableCell>
                       <Select
