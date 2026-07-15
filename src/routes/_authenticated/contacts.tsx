@@ -160,6 +160,7 @@ function ContactsPage() {
   const [editing, setEditing] = useState<Contact | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [ledgerContact, setLedgerContact] = useState<Contact | null>(null);
+  const [ledgerPrintSize, setLedgerPrintSize] = useState<"A4" | "80mm" | "58mm">("A4");
 
   const { data: contacts = [], isLoading } = useQuery({
     queryKey: ["contacts", business?.id],
@@ -473,8 +474,18 @@ function ContactsPage() {
                 <p className="text-xs text-muted-foreground capitalize">{ledgerContact.type}{ledgerContact.mobile ? ` · ${ledgerContact.mobile}` : ""}</p>
               </div>
               <div className="flex items-center gap-2">
+                <select
+                  value={ledgerPrintSize}
+                  onChange={(e) => setLedgerPrintSize(e.target.value as "A4" | "80mm" | "58mm")}
+                  className="h-8 rounded-md border border-border/60 bg-input px-2 text-xs"
+                  title="Paper size"
+                >
+                  <option value="A4">A4</option>
+                  <option value="80mm">80mm</option>
+                  <option value="58mm">58mm</option>
+                </select>
                 <button
-                  onClick={() => printLedger(ledgerContact, business, { opening, sell: s.sell, sellPaid: s.sellPaid, purchase: s.purchase, purchasePaid: s.purchasePaid, netDue }, ledgerRows)}
+                  onClick={() => printLedger(ledgerContact, business, { opening, sell: s.sell, sellPaid: s.sellPaid, purchase: s.purchase, purchasePaid: s.purchasePaid, netDue }, ledgerRows, ledgerPrintSize)}
                   className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border/60 px-2.5 text-xs hover:bg-muted"
                   title="Print ledger"
                 >
