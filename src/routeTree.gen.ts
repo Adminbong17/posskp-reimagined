@@ -22,7 +22,6 @@ import { Route as AuthenticatedRepairRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
 import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/pos'
-import { Route as AuthenticatedManufacturingRouteImport } from './routes/_authenticated/manufacturing'
 import { Route as AuthenticatedHrmRouteImport } from './routes/_authenticated/hrm'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated/files'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -128,12 +127,6 @@ const AuthenticatedPosRoute = AuthenticatedPosRouteImport.update({
   path: '/pos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedManufacturingRoute =
-  AuthenticatedManufacturingRouteImport.update({
-    id: '/manufacturing',
-    path: '/manufacturing',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedHrmRoute = AuthenticatedHrmRouteImport.update({
   id: '/hrm',
   path: '/hrm',
@@ -371,7 +364,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRoute
   '/hrm': typeof AuthenticatedHrmRouteWithChildren
-  '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
   '/products': typeof AuthenticatedProductsRouteWithChildren
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
@@ -424,7 +416,6 @@ export interface FileRoutesByTo {
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRoute
-  '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
@@ -476,7 +467,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/files': typeof AuthenticatedFilesRoute
   '/_authenticated/hrm': typeof AuthenticatedHrmRouteWithChildren
-  '/_authenticated/manufacturing': typeof AuthenticatedManufacturingRoute
   '/_authenticated/pos': typeof AuthenticatedPosRoute
   '/_authenticated/products': typeof AuthenticatedProductsRouteWithChildren
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRouteWithChildren
@@ -533,7 +523,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/files'
     | '/hrm'
-    | '/manufacturing'
     | '/pos'
     | '/products'
     | '/purchases'
@@ -586,7 +575,6 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/dashboard'
     | '/files'
-    | '/manufacturing'
     | '/pos'
     | '/purchases'
     | '/sales'
@@ -637,7 +625,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/files'
     | '/_authenticated/hrm'
-    | '/_authenticated/manufacturing'
     | '/_authenticated/pos'
     | '/_authenticated/products'
     | '/_authenticated/purchases'
@@ -783,13 +770,6 @@ declare module '@tanstack/react-router' {
       path: '/pos'
       fullPath: '/pos'
       preLoaderRoute: typeof AuthenticatedPosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/manufacturing': {
-      id: '/_authenticated/manufacturing'
-      path: '/manufacturing'
-      fullPath: '/manufacturing'
-      preLoaderRoute: typeof AuthenticatedManufacturingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/hrm': {
@@ -1245,7 +1225,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRoute
   AuthenticatedHrmRoute: typeof AuthenticatedHrmRouteWithChildren
-  AuthenticatedManufacturingRoute: typeof AuthenticatedManufacturingRoute
   AuthenticatedPosRoute: typeof AuthenticatedPosRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRouteWithChildren
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRouteWithChildren
@@ -1264,7 +1243,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRoute,
   AuthenticatedHrmRoute: AuthenticatedHrmRouteWithChildren,
-  AuthenticatedManufacturingRoute: AuthenticatedManufacturingRoute,
   AuthenticatedPosRoute: AuthenticatedPosRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRouteWithChildren,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRouteWithChildren,
