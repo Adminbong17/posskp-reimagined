@@ -25,6 +25,7 @@ import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/po
 import { Route as AuthenticatedManufacturingRouteImport } from './routes/_authenticated/manufacturing'
 import { Route as AuthenticatedHrmRouteImport } from './routes/_authenticated/hrm'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated/files'
+import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedContactsRouteImport } from './routes/_authenticated/contacts'
@@ -142,6 +143,11 @@ const AuthenticatedHrmRoute = AuthenticatedHrmRouteImport.update({
 const AuthenticatedFilesRoute = AuthenticatedFilesRouteImport.update({
   id: '/files',
   path: '/files',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -369,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof AuthenticatedContactsRoute
   '/crm': typeof AuthenticatedCrmRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
   '/files': typeof AuthenticatedFilesRoute
   '/hrm': typeof AuthenticatedHrmRouteWithChildren
   '/manufacturing': typeof AuthenticatedManufacturingRoute
@@ -423,6 +430,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
   '/files': typeof AuthenticatedFilesRoute
   '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
@@ -474,6 +482,7 @@ export interface FileRoutesById {
   '/_authenticated/contacts': typeof AuthenticatedContactsRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/files': typeof AuthenticatedFilesRoute
   '/_authenticated/hrm': typeof AuthenticatedHrmRouteWithChildren
   '/_authenticated/manufacturing': typeof AuthenticatedManufacturingRoute
@@ -531,6 +540,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/crm'
     | '/dashboard'
+    | '/expenses'
     | '/files'
     | '/hrm'
     | '/manufacturing'
@@ -585,6 +595,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contacts'
     | '/dashboard'
+    | '/expenses'
     | '/files'
     | '/manufacturing'
     | '/pos'
@@ -635,6 +646,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contacts'
     | '/_authenticated/crm'
     | '/_authenticated/dashboard'
+    | '/_authenticated/expenses'
     | '/_authenticated/files'
     | '/_authenticated/hrm'
     | '/_authenticated/manufacturing'
@@ -804,6 +816,13 @@ declare module '@tanstack/react-router' {
       path: '/files'
       fullPath: '/files'
       preLoaderRoute: typeof AuthenticatedFilesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/expenses': {
+      id: '/_authenticated/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof AuthenticatedExpensesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -1243,6 +1262,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedContactsRoute: typeof AuthenticatedContactsRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRoute
   AuthenticatedHrmRoute: typeof AuthenticatedHrmRouteWithChildren
   AuthenticatedManufacturingRoute: typeof AuthenticatedManufacturingRoute
@@ -1262,6 +1282,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedContactsRoute: AuthenticatedContactsRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRoute,
   AuthenticatedHrmRoute: AuthenticatedHrmRouteWithChildren,
   AuthenticatedManufacturingRoute: AuthenticatedManufacturingRoute,
@@ -1289,13 +1310,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

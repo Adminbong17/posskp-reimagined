@@ -709,6 +709,215 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_categories: {
+        Row: {
+          business_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_payments: {
+        Row: {
+          amount: number
+          business_id: string
+          created_at: string
+          created_by: string | null
+          expense_id: string
+          id: string
+          method: string
+          note: string | null
+          paid_on: string
+        }
+        Insert: {
+          amount: number
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          expense_id: string
+          id?: string
+          method?: string
+          note?: string | null
+          paid_on?: string
+        }
+        Update: {
+          amount?: number
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          expense_id?: string
+          id?: string
+          method?: string
+          note?: string | null
+          paid_on?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_payments_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_payments_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expenses: {
+        Row: {
+          amount: number
+          business_id: string
+          category_id: string | null
+          contact_id: string | null
+          created_at: string
+          created_by: string | null
+          expense_date: string
+          id: string
+          is_recurring: boolean
+          is_recurring_active: boolean
+          location_id: string | null
+          notes: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          recurring_end_date: string | null
+          recurring_interval:
+            | Database["public"]["Enums"]["expense_recurring_interval"]
+            | null
+          recurring_next_date: string | null
+          ref_no: string | null
+          tax_amount: number
+          total_amount: number
+          total_paid: number
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          business_id: string
+          category_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          expense_date?: string
+          id?: string
+          is_recurring?: boolean
+          is_recurring_active?: boolean
+          location_id?: string | null
+          notes?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          recurring_end_date?: string | null
+          recurring_interval?:
+            | Database["public"]["Enums"]["expense_recurring_interval"]
+            | null
+          recurring_next_date?: string | null
+          ref_no?: string | null
+          tax_amount?: number
+          total_amount?: number
+          total_paid?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          business_id?: string
+          category_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          expense_date?: string
+          id?: string
+          is_recurring?: boolean
+          is_recurring_active?: boolean
+          location_id?: string | null
+          notes?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          recurring_end_date?: string | null
+          recurring_interval?:
+            | Database["public"]["Enums"]["expense_recurring_interval"]
+            | null
+          recurring_next_date?: string | null
+          ref_no?: string | null
+          tax_amount?: number
+          total_amount?: number
+          total_paid?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "business_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hrm_attendance: {
         Row: {
           business_id: string
@@ -2526,6 +2735,7 @@ export type Database = {
     Enums: {
       barcode_type: "C128" | "C39" | "EAN13" | "EAN8" | "UPCA" | "UPCE"
       contact_type: "customer" | "supplier" | "both"
+      expense_recurring_interval: "daily" | "weekly" | "monthly" | "yearly"
       mfg_order_status: "draft" | "in_progress" | "completed" | "cancelled"
       payment_status: "paid" | "due" | "partial" | "overdue"
       product_type: "single" | "variable" | "combo"
@@ -2671,6 +2881,7 @@ export const Constants = {
     Enums: {
       barcode_type: ["C128", "C39", "EAN13", "EAN8", "UPCA", "UPCE"],
       contact_type: ["customer", "supplier", "both"],
+      expense_recurring_interval: ["daily", "weekly", "monthly", "yearly"],
       mfg_order_status: ["draft", "in_progress", "completed", "cancelled"],
       payment_status: ["paid", "due", "partial", "overdue"],
       product_type: ["single", "variable", "combo"],

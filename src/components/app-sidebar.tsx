@@ -32,7 +32,7 @@ const sections = [
   {
     label: "Finance",
     items: [
-      { to: "/expenses", label: "Expenses", icon: Wallet, enabled: false, key: "expenses" },
+      { to: "/expenses", label: "Expenses", icon: Wallet, enabled: true, key: "expenses" },
       { to: "/accounts", label: "Accounts", icon: BookOpen, enabled: false, key: "accounts" },
     ],
   },
