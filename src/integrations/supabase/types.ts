@@ -930,6 +930,285 @@ export type Database = {
           },
         ]
       }
+      mfg_bom_lines: {
+        Row: {
+          bom_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          unit_cost: number
+          variation_id: string
+        }
+        Insert: {
+          bom_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity: number
+          unit_cost?: number
+          variation_id: string
+        }
+        Update: {
+          bom_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          unit_cost?: number
+          variation_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfg_bom_lines_bom_id_fkey"
+            columns: ["bom_id"]
+            isOneToOne: false
+            referencedRelation: "mfg_boms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_bom_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_bom_lines_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mfg_boms: {
+        Row: {
+          business_id: string
+          created_at: string
+          created_by: string | null
+          finished_product_id: string
+          finished_variation_id: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          output_qty: number
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          finished_product_id: string
+          finished_variation_id: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          output_qty?: number
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          finished_product_id?: string
+          finished_variation_id?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          output_qty?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfg_boms_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_boms_finished_product_id_fkey"
+            columns: ["finished_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_boms_finished_variation_id_fkey"
+            columns: ["finished_variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mfg_production_lines: {
+        Row: {
+          actual_qty: number
+          created_at: string
+          id: string
+          order_id: string
+          planned_qty: number
+          product_id: string
+          total_cost: number
+          unit_cost: number
+          variation_id: string
+        }
+        Insert: {
+          actual_qty?: number
+          created_at?: string
+          id?: string
+          order_id: string
+          planned_qty?: number
+          product_id: string
+          total_cost?: number
+          unit_cost?: number
+          variation_id: string
+        }
+        Update: {
+          actual_qty?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          planned_qty?: number
+          product_id?: string
+          total_cost?: number
+          unit_cost?: number
+          variation_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfg_production_lines_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "mfg_production_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_lines_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mfg_production_orders: {
+        Row: {
+          bom_id: string | null
+          business_id: string
+          created_at: string
+          created_by: string | null
+          finished_product_id: string
+          finished_variation_id: string
+          id: string
+          location_id: string
+          notes: string | null
+          order_date: string
+          planned_qty: number
+          produced_qty: number
+          ref_no: string | null
+          status: Database["public"]["Enums"]["mfg_order_status"]
+          total_cost: number
+          unit_cost: number
+          updated_at: string
+          wastage_qty: number
+          yield_percent: number
+        }
+        Insert: {
+          bom_id?: string | null
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          finished_product_id: string
+          finished_variation_id: string
+          id?: string
+          location_id: string
+          notes?: string | null
+          order_date?: string
+          planned_qty?: number
+          produced_qty?: number
+          ref_no?: string | null
+          status?: Database["public"]["Enums"]["mfg_order_status"]
+          total_cost?: number
+          unit_cost?: number
+          updated_at?: string
+          wastage_qty?: number
+          yield_percent?: number
+        }
+        Update: {
+          bom_id?: string | null
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          finished_product_id?: string
+          finished_variation_id?: string
+          id?: string
+          location_id?: string
+          notes?: string | null
+          order_date?: string
+          planned_qty?: number
+          produced_qty?: number
+          ref_no?: string | null
+          status?: Database["public"]["Enums"]["mfg_order_status"]
+          total_cost?: number
+          unit_cost?: number
+          updated_at?: string
+          wastage_qty?: number
+          yield_percent?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfg_production_orders_bom_id_fkey"
+            columns: ["bom_id"]
+            isOneToOne: false
+            referencedRelation: "mfg_boms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_orders_finished_product_id_fkey"
+            columns: ["finished_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_orders_finished_variation_id_fkey"
+            columns: ["finished_variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mfg_production_orders_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "business_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_variations: {
         Row: {
           created_at: string
@@ -2216,6 +2495,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_production_order: {
+        Args: { _id: string; _payload: Json }
+        Returns: string
+      }
       create_purchase: { Args: { _payload: Json }; Returns: string }
       current_user_role_name: {
         Args: { _business_id: string }
@@ -2243,6 +2526,7 @@ export type Database = {
     Enums: {
       barcode_type: "C128" | "C39" | "EAN13" | "EAN8" | "UPCA" | "UPCE"
       contact_type: "customer" | "supplier" | "both"
+      mfg_order_status: "draft" | "in_progress" | "completed" | "cancelled"
       payment_status: "paid" | "due" | "partial" | "overdue"
       product_type: "single" | "variable" | "combo"
       stock_adjustment_type: "normal" | "abnormal"
@@ -2387,6 +2671,7 @@ export const Constants = {
     Enums: {
       barcode_type: ["C128", "C39", "EAN13", "EAN8", "UPCA", "UPCE"],
       contact_type: ["customer", "supplier", "both"],
+      mfg_order_status: ["draft", "in_progress", "completed", "cancelled"],
       payment_status: ["paid", "due", "partial", "overdue"],
       product_type: ["single", "variable", "combo"],
       stock_adjustment_type: ["normal", "abnormal"],
