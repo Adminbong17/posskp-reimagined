@@ -297,7 +297,7 @@ function ExpensesList({
         recurring_end_date: form.is_recurring && form.recurring_end_date ? form.recurring_end_date : null,
         is_recurring_active: form.is_recurring,
       };
-      let expenseId = editId;
+      let expenseId: string | null = editId;
       if (editId) {
         const { error } = await supabase.from("expenses").update(payload).eq("id", editId);
         if (error) throw error;
@@ -309,7 +309,7 @@ function ExpensesList({
       }
       // Sync a single payment row equal to amount_paid on create.
       // On edit, if paid differs, adjust by adding a diff payment.
-      if (!editId && paid > 0) {
+      if (!editId && paid > 0 && expenseId) {
         const { error: pe } = await supabase.from("expense_payments").insert({
           expense_id: expenseId,
           business_id: businessId,
