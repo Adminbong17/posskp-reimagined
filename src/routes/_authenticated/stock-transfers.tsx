@@ -81,10 +81,10 @@ function StockTransfersPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("variations")
-        .select("id, product_id, name, default_purchase_price")
-        .eq("business_id", businessId!)
+        .select("id, product_id, name, default_purchase_price, products!inner(business_id)")
+        .eq("products.business_id", businessId!)
         .order("name");
-      return (data ?? []) as Variation[];
+      return (data ?? []) as unknown as Variation[];
     },
   });
 
