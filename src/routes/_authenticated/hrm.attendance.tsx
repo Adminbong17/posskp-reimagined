@@ -6,6 +6,7 @@ import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { toast } from "sonner";
 import { Printer } from "lucide-react";
 import { printHrmReport } from "@/lib/hrm-print";
+import { PrintSizeButton } from "@/components/print-size-select";
 
 export const Route = createFileRoute("/_authenticated/hrm/attendance")({
   component: AttendancePage,
@@ -88,7 +89,7 @@ function AttendancePage() {
         <div className="ml-auto flex gap-1.5">
           <button onClick={() => markAll.mutate("present")} className="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs">Mark all present</button>
           <button onClick={() => markAll.mutate("absent")} className="rounded-lg bg-rose-600 text-white px-3 py-1.5 text-xs">Mark all absent</button>
-          <button onClick={() => printHrmReport({
+          <PrintSizeButton onPrint={(size) => printHrmReport({
             title: "Attendance Report",
             subtitle: `Date: ${new Date(date).toLocaleDateString("en-GB")}`,
             business,
@@ -101,9 +102,8 @@ function AttendancePage() {
               return [e.name, e.designation ?? "", r?.status ?? "—", r?.check_in ?? "—", r?.check_out ?? "—", r?.notes ?? ""];
             }),
             filename: `attendance-${date}`,
-          })} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
-            <Printer className="h-3.5 w-3.5" /> Print
-          </button>
+            size,
+          })} />
         </div>
       </div>
 
