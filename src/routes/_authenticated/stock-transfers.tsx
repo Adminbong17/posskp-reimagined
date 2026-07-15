@@ -6,6 +6,7 @@ import { Plus, Trash2, ArrowRight, PackageCheck } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { PrintSizeButton, type PrintSize } from "@/components/print-size-select";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -181,6 +182,12 @@ function StockTransfersPage() {
                       <Button size="sm" variant="outline" onClick={() => receive.mutate(t.id)}>
                         <PackageCheck className="mr-1 h-3.5 w-3.5" /> Receive
                       </Button>
+                    )}
+                    {(t.status === "in_transit" || t.status === "received") && (
+                      <PrintSizeButton
+                        label=""
+                        onPrint={(size) => printTransfer(t.id, size, business?.name ?? "Stock Transfer", locations.data ?? [])}
+                      />
                     )}
                     <Button size="sm" variant="ghost" onClick={() => { if (confirm("Delete this transfer?")) del.mutate(t.id); }}>
                       <Trash2 className="h-3.5 w-3.5" />
