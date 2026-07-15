@@ -6,6 +6,7 @@ import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { toast } from "sonner";
 import { Plus, Check, X, Trash2, Printer } from "lucide-react";
 import { printHrmReport } from "@/lib/hrm-print";
+import { PrintSizeButton } from "@/components/print-size-select";
 
 export const Route = createFileRoute("/_authenticated/hrm/leaves")({
   component: LeavesPage,
@@ -74,7 +75,7 @@ function LeavesPage() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end gap-2">
-        <button onClick={() => printHrmReport({
+        <PrintSizeButton onPrint={(size) => printHrmReport({
           title: "Leave Requests",
           business,
           columns: [
@@ -87,9 +88,8 @@ function LeavesPage() {
             r.reason ?? "—", r.status,
           ]),
           filename: "leaves",
-        })} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
-          <Printer className="h-3.5 w-3.5" /> Print
-        </button>
+          size,
+        })} />
         <button onClick={() => setShowForm((s) => !s)}
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
           <Plus className="h-3.5 w-3.5" /> New leave request

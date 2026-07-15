@@ -6,6 +6,7 @@ import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Printer } from "lucide-react";
 import { printHrmReport } from "@/lib/hrm-print";
+import { PrintSizeButton } from "@/components/print-size-select";
 
 export const Route = createFileRoute("/_authenticated/hrm/payroll")({
   component: PayrollPage,
@@ -108,7 +109,7 @@ function PayrollPage() {
         <input type="month" value={month} onChange={(e) => setMonth(e.target.value)}
           className="h-9 rounded-lg border border-border bg-input px-3 text-sm" />
         <div className="ml-auto flex gap-1.5">
-          <button onClick={() => printHrmReport({
+          <PrintSizeButton onPrint={(size) => printHrmReport({
             title: "Payroll Report",
             subtitle: `Month: ${month}`,
             business,
@@ -134,9 +135,8 @@ function PayrollPage() {
               "",
             ]] : [],
             filename: `payroll-${month}`,
-          })} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
-            <Printer className="h-3.5 w-3.5" /> Print
-          </button>
+            size,
+          })} />
           <button onClick={() => generateAll.mutate()} disabled={generateAll.isPending}
             className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium">
             {generateAll.isPending ? "Generating…" : "Auto-generate for all"}

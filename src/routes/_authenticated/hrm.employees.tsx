@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { printHrmReport } from "@/lib/hrm-print";
+import { PrintSizeButton } from "@/components/print-size-select";
 import { Printer } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/hrm/employees")({
@@ -25,7 +26,7 @@ function EmployeesPage() {
   return (
     <div className="space-y-3">
       <div className="flex justify-end">
-        <button onClick={() => printHrmReport({
+        <PrintSizeButton onPrint={(size) => printHrmReport({
           title: "Employee Directory",
           business,
           columns: [
@@ -40,9 +41,8 @@ function EmployeesPage() {
             e.is_active ? "Active" : "Inactive",
           ]),
           filename: "employees",
-        })} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
-          <Printer className="h-3.5 w-3.5" /> Print
-        </button>
+          size,
+        })} />
       </div>
       <MasterDataTable
         table="hrm_employees"

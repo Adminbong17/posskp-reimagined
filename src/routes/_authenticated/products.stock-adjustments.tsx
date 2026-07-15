@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { toast } from "sonner";
 import { Eye, Plus, Printer, Trash2, X } from "lucide-react";
+import { PrintSizeButton } from "@/components/print-size-select";
 import { fetchAll } from "@/lib/fetch-all";
 
 export const Route = createFileRoute("/_authenticated/products/stock-adjustments")({
@@ -122,9 +123,7 @@ function StockAdjustments() {
                     <button onClick={() => setViewId(r.id)} title="View" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border hover:bg-muted/50">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button onClick={() => printAdjustment(r.id)} title="Print" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border hover:bg-muted/50">
-                      <Printer className="h-4 w-4" />
-                    </button>
+                    <PrintSizeButton label="" onPrint={(size) => printAdjustment(r.id, size)} />
                     <button
                       onClick={() => { if (confirm(`Delete adjustment ${r.ref_no}? Stock will be reversed.`)) del.mutate(r); }}
                       title="Delete"
@@ -178,9 +177,7 @@ function ViewAdjustmentDialog({ id, onClose }: { id: string; onClose: () => void
         <div className="flex items-center justify-between border-b border-border/60 px-5 py-3">
           <h3 className="text-sm font-semibold">Adjustment {header.ref_no}</h3>
           <div className="flex items-center gap-2">
-            <button onClick={() => printAdjustment(id)} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs">
-              <Printer className="h-3.5 w-3.5" /> Print
-            </button>
+            <PrintSizeButton onPrint={(size) => printAdjustment(id, size)} />
             <button onClick={onClose} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-muted/50"><X className="h-4 w-4" /></button>
           </div>
         </div>
@@ -227,7 +224,7 @@ function ViewAdjustmentDialog({ id, onClose }: { id: string; onClose: () => void
   );
 }
 
-async function printAdjustment(id: string) {
+async function printAdjustment(id: string, size: "A4" | "80mm" | "58mm" = "A4") {
   try {
     const { header, lines } = await fetchAdjustmentDetail(id);
     const typeLabel = header.adjustment_type === "normal" ? "Add (+)" : header.adjustment_type === "abnormal" ? "Minus (-)" : header.adjustment_type;
@@ -265,16 +262,20 @@ async function printAdjustment(id: string) {
 
     const style = document.createElement("style");
     style.id = styleId;
+    const pageSize = size === "A4" ? "A4" : size === "80mm" ? "80mm auto" : "58mm auto";
+    const pageMargin = size === "A4" ? "12mm" : "3mm 2mm";
+    const width = size === "A4" ? "210mm" : size === "80mm" ? "80mm" : "58mm";
+    const fs = size === "A4" ? "13px" : size === "80mm" ? "11px" : "10px";
     style.textContent = `
-      #${printId} { font-family: system-ui, -apple-system, Arial, sans-serif; color:#000; background:#fff; padding:24px; width:210mm; max-width:100%; box-sizing:border-box; }
+      #${printId} { font-family: system-ui, -apple-system, Arial, sans-serif; color:#000; background:#fff; padding:${size === "A4" ? "24px" : "6px"}; width:${width}; max-width:100%; box-sizing:border-box; font-size:${fs}; }
       #${printId} * { box-sizing: border-box; }
-      #${printId} h1 { font-size:20px; margin:0 0 4px; }
-      #${printId} table { width:100%; border-collapse: collapse; margin-top:16px; font-size:13px; }
-      #${printId} th, #${printId} td { border-bottom:1px solid #ddd; padding:6px 8px; text-align:left; color:#000; background:#fff; }
+      #${printId} h1 { font-size:${size === "A4" ? "20px" : "14px"}; margin:0 0 4px; }
+      #${printId} table { width:100%; border-collapse: collapse; margin-top:12px; font-size:${fs}; }
+      #${printId} th, #${printId} td { border-bottom:1px solid #ddd; padding:${size === "A4" ? "6px 8px" : "3px 4px"}; text-align:left; color:#000; background:#fff; }
       #${printId} th { background:#f4f4f4 !important; }
-      #${printId} .meta { margin-top:12px; display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:13px; }
+      #${printId} .meta { margin-top:8px; display:grid; grid-template-columns: ${size === "A4" ? "1fr 1fr" : "1fr"}; gap:4px; font-size:${fs}; }
       #${printId} .total { margin-top:12px; text-align:right; font-weight:700; font-size:14px; }
-      @page { size: A4; margin: 12mm; }
+      @page { size: ${pageSize}; margin: ${pageMargin}; }
       @media print {
         html, body { background:#fff !important; color:#000 !important; margin:0 !important; padding:0 !important; }
         body > *:not(#${printId}) { display:none !important; visibility:hidden !important; }
