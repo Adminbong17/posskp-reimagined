@@ -124,9 +124,10 @@ function Setup() {
         </Field>
         <button disabled={loading} type="submit"
           className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
-          {loading ? "Creating…" : "Create business"}
+          {loading ? "Submitting…" : "Submit for approval"}
         </button>
       </form>
+      )}
     </div>
   );
 }
