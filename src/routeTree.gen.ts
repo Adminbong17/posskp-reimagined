@@ -64,6 +64,7 @@ import { Route as AuthenticatedHrmAttendanceRouteImport } from './routes/_authen
 import { Route as AuthenticatedCrmLeadsRouteImport } from './routes/_authenticated/crm.leads'
 import { Route as AuthenticatedCrmFollowupsRouteImport } from './routes/_authenticated/crm.followups'
 import { Route as AuthenticatedCrmCampaignsRouteImport } from './routes/_authenticated/crm.campaigns'
+import { Route as AuthenticatedAdminBusinessRequestsRouteImport } from './routes/_authenticated/admin.business-requests'
 import { Route as AuthenticatedSalesIdEditRouteImport } from './routes/_authenticated/sales_.$id.edit'
 import { Route as AuthenticatedPurchasesIdEditRouteImport } from './routes/_authenticated/purchases.$id.edit'
 
@@ -369,6 +370,12 @@ const AuthenticatedCrmCampaignsRoute =
     path: '/campaigns',
     getParentRoute: () => AuthenticatedCrmRoute,
   } as any)
+const AuthenticatedAdminBusinessRequestsRoute =
+  AuthenticatedAdminBusinessRequestsRouteImport.update({
+    id: '/admin/business-requests',
+    path: '/admin/business-requests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSalesIdEditRoute =
   AuthenticatedSalesIdEditRouteImport.update({
     id: '/sales_/$id/edit',
@@ -404,6 +411,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof AuthenticatedSetupRoute
   '/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
+  '/admin/business-requests': typeof AuthenticatedAdminBusinessRequestsRoute
   '/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/crm/followups': typeof AuthenticatedCrmFollowupsRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -455,6 +463,7 @@ export interface FileRoutesByTo {
   '/setup': typeof AuthenticatedSetupRoute
   '/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
+  '/admin/business-requests': typeof AuthenticatedAdminBusinessRequestsRoute
   '/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/crm/followups': typeof AuthenticatedCrmFollowupsRoute
   '/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -515,6 +524,7 @@ export interface FileRoutesById {
   '/_authenticated/setup': typeof AuthenticatedSetupRoute
   '/_authenticated/stock-transfers': typeof AuthenticatedStockTransfersRoute
   '/scan/$sessionId': typeof ScanSessionIdRoute
+  '/_authenticated/admin/business-requests': typeof AuthenticatedAdminBusinessRequestsRoute
   '/_authenticated/crm/campaigns': typeof AuthenticatedCrmCampaignsRoute
   '/_authenticated/crm/followups': typeof AuthenticatedCrmFollowupsRoute
   '/_authenticated/crm/leads': typeof AuthenticatedCrmLeadsRoute
@@ -575,6 +585,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/stock-transfers'
     | '/scan/$sessionId'
+    | '/admin/business-requests'
     | '/crm/campaigns'
     | '/crm/followups'
     | '/crm/leads'
@@ -626,6 +637,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/stock-transfers'
     | '/scan/$sessionId'
+    | '/admin/business-requests'
     | '/crm/campaigns'
     | '/crm/followups'
     | '/crm/leads'
@@ -685,6 +697,7 @@ export interface FileRouteTypes {
     | '/_authenticated/setup'
     | '/_authenticated/stock-transfers'
     | '/scan/$sessionId'
+    | '/_authenticated/admin/business-requests'
     | '/_authenticated/crm/campaigns'
     | '/_authenticated/crm/followups'
     | '/_authenticated/crm/leads'
@@ -1116,6 +1129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmCampaignsRouteImport
       parentRoute: typeof AuthenticatedCrmRoute
     }
+    '/_authenticated/admin/business-requests': {
+      id: '/_authenticated/admin/business-requests'
+      path: '/admin/business-requests'
+      fullPath: '/admin/business-requests'
+      preLoaderRoute: typeof AuthenticatedAdminBusinessRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/sales_/$id/edit': {
       id: '/_authenticated/sales_/$id/edit'
       path: '/sales/$id/edit'
@@ -1316,6 +1336,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
   AuthenticatedStockTransfersRoute: typeof AuthenticatedStockTransfersRoute
+  AuthenticatedAdminBusinessRequestsRoute: typeof AuthenticatedAdminBusinessRequestsRoute
   AuthenticatedSalesIdEditRoute: typeof AuthenticatedSalesIdEditRoute
 }
 
@@ -1338,6 +1359,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedSetupRoute: AuthenticatedSetupRoute,
   AuthenticatedStockTransfersRoute: AuthenticatedStockTransfersRoute,
+  AuthenticatedAdminBusinessRequestsRoute:
+    AuthenticatedAdminBusinessRequestsRoute,
   AuthenticatedSalesIdEditRoute: AuthenticatedSalesIdEditRoute,
 }
 
@@ -1353,13 +1376,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

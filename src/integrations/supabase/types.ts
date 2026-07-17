@@ -323,6 +323,54 @@ export type Database = {
           },
         ]
       }
+      business_requests: {
+        Row: {
+          admin_notes: string | null
+          business_id: string | null
+          created_at: string
+          currency_id: number
+          id: string
+          location_name: string
+          name: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sku_prefix: string | null
+          status: Database["public"]["Enums"]["biz_request_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_id?: string | null
+          created_at?: string
+          currency_id: number
+          id?: string
+          location_name?: string
+          name: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sku_prefix?: string | null
+          status?: Database["public"]["Enums"]["biz_request_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          business_id?: string | null
+          created_at?: string
+          currency_id?: number
+          id?: string
+          location_name?: string
+          name?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sku_prefix?: string | null
+          status?: Database["public"]["Enums"]["biz_request_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_users: {
         Row: {
           access_all_locations: boolean
@@ -2946,6 +2994,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_business_request: {
+        Args: { _id: string; _notes?: string }
+        Returns: string
+      }
       complete_production_order: {
         Args: { _id: string; _payload: Json }
         Returns: string
@@ -2970,7 +3022,12 @@ export type Database = {
         Args: { _business_id: string; _user_id: string }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       receive_stock_transfer: { Args: { _id: string }; Returns: undefined }
+      reject_business_request: {
+        Args: { _id: string; _notes?: string }
+        Returns: undefined
+      }
       transfer_between_accounts: {
         Args: { _amount: number; _from: string; _note: string; _to: string }
         Returns: undefined
@@ -2983,6 +3040,7 @@ export type Database = {
     }
     Enums: {
       barcode_type: "C128" | "C39" | "EAN13" | "EAN8" | "UPCA" | "UPCE"
+      biz_request_status: "pending" | "approved" | "rejected"
       contact_type: "customer" | "supplier" | "both"
       expense_recurring_interval: "daily" | "weekly" | "monthly" | "yearly"
       mfg_order_status: "draft" | "in_progress" | "completed" | "cancelled"
@@ -3129,6 +3187,7 @@ export const Constants = {
   public: {
     Enums: {
       barcode_type: ["C128", "C39", "EAN13", "EAN8", "UPCA", "UPCE"],
+      biz_request_status: ["pending", "approved", "rejected"],
       contact_type: ["customer", "supplier", "both"],
       expense_recurring_interval: ["daily", "weekly", "monthly", "yearly"],
       mfg_order_status: ["draft", "in_progress", "completed", "cancelled"],
