@@ -1,0 +1,124 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useState } from "react";
+
+export const Route = createFileRoute("/_authenticated/admin/business-requests")({
+  head: () => ({ meta: [{ title: "Business Requests — Admin" }] }),
+  component: Page,
+});
+
+function Page() {
+  const qc = useQueryClient();
+  const [notes, setNotes] = useState<Record<string, string>>({});
+
+  const { data: me } = useQuery({
+    queryKey: ["me-email"],
+    queryFn: async () => (await supabase.auth.getUser()).data.user,
+  });
+  const isAdmin = me?.email?.toLowerCase() === "admin@bongbangla.top";
+
+  const { data: rows = [], isLoading } = useQuery({
+    queryKey: ["business-requests-all"],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("business_requests")
+        .select("id, user_id, name, currency_id, sku_prefix, location_name, status, admin_notes, created_at, reviewed_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const approve = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc("approve_business_request", { _id: id, _notes: notes[id] ?? null });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Approved"); qc.invalidateQueries({ queryKey: ["business-requests-all"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const reject = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc("reject_business_request", { _id: id, _notes: notes[id] ?? null });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Rejected"); qc.invalidateQueries({ queryKey: ["business-requests-all"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  if (!me) return <div className="p-8">Loading…</div>;
+  if (!isAdmin) return <div className="p-8 text-sm text-muted-foreground">Only the super admin can access this page.</div>;
+
+  const pending = rows.filter((r) => r.status === "pending");
+  const others = rows.filter((r) => r.status !== "pending");
+
+  return (
+    <div className="p-6 space-y-6 max-w-5xl">
+      <div>
+        <h1 className="font-display text-2xl font-semibold">Business Requests</h1>
+        <p className="text-sm text-muted-foreground">Approve or reject pending business creation requests.</p>
+      </div>
+
+      <section>
+        <h2 className="text-sm font-medium mb-2">Pending ({pending.length})</h2>
+        <div className="space-y-3">
+          {isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
+          {!isLoading && pending.length === 0 && <div className="text-sm text-muted-foreground">No pending requests.</div>}
+          {pending.map((r) => (
+            <div key={r.id} className="rounded-xl border border-border/60 bg-card p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="font-medium">{r.name}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    Location: {r.location_name} · SKU: {r.sku_prefix ?? "—"} · Requested: {new Date(r.created_at).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">User: {r.user_id}</div>
+                </div>
+              </div>
+              <textarea
+                placeholder="Admin notes (optional)"
+                value={notes[r.id] ?? ""}
+                onChange={(e) => setNotes((n) => ({ ...n, [r.id]: e.target.value }))}
+                className="mt-3 w-full min-h-[60px] rounded-lg border border-border bg-input p-2 text-sm"
+              />
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => approve.mutate(r.id)}
+                  disabled={approve.isPending}
+                  className="h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
+                  Approve
+                </button>
+                <button
+                  onClick={() => reject.mutate(r.id)}
+                  disabled={reject.isPending}
+                  className="h-9 px-4 rounded-lg border border-border text-sm font-medium disabled:opacity-50">
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm font-medium mb-2">History</h2>
+        <div className="space-y-2">
+          {others.map((r) => (
+            <div key={r.id} className="rounded-lg border border-border/60 bg-card p-3 text-sm flex items-center justify-between">
+              <div>
+                <span className="font-medium">{r.name}</span>
+                <span className="ml-2 text-xs text-muted-foreground">{r.user_id}</span>
+              </div>
+              <span className={`text-xs font-medium ${r.status === "approved" ? "text-emerald-500" : "text-destructive"}`}>
+                {r.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
