@@ -40,21 +40,16 @@ function Setup() {
     try {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Not signed in");
-      const { data: biz, error } = await supabase
-        .from("businesses")
-        .insert({ name, currency_id: currencyId, sku_prefix: skuPrefix || null, owner_id: u.user.id })
-        .select()
-        .single();
-      if (error) throw error;
-      // create first location
-      await supabase.from("business_locations").insert({
-        business_id: biz.id,
-        name: locationName,
-        location_id: "BL0001",
+      const { error } = await supabase.from("business_requests").insert({
+        user_id: u.user.id,
+        name,
+        currency_id: currencyId,
+        sku_prefix: skuPrefix || null,
+        location_name: locationName,
       });
-      toast.success("Business created!");
-      await qc.invalidateQueries({ queryKey: ["current-business"] });
-      navigate({ to: "/dashboard" });
+      if (error) throw error;
+      toast.success("Request submitted! Waiting for admin approval.");
+      await qc.invalidateQueries({ queryKey: ["my-business-request"] });
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create business");
     } finally {
@@ -62,12 +57,49 @@ function Setup() {
     }
   }
 
+  const { data: myReq } = useQuery({
+    queryKey: ["my-business-request"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data } = await supabase.from("business_requests")
+        .select("id, name, status, admin_notes, created_at, business_id")
+        .eq("user_id", u.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1).maybeSingle();
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (myReq?.status === "approved") {
+      qc.invalidateQueries({ queryKey: ["current-business"] });
+      navigate({ to: "/dashboard" });
+    }
+  }, [myReq?.status, qc, navigate]);
+
   return (
     <div className="mx-auto max-w-xl p-8">
       <h1 className="font-display text-2xl font-semibold">Set up your business</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Tell us about your business to get started. You can change these anytime in Settings.
+        Submit your business details. An admin will review and approve your request.
       </p>
+      {myReq && myReq.status === "pending" && (
+        <div className="mt-4 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+          <div className="font-medium">Request pending approval</div>
+          <div className="text-muted-foreground mt-1">
+            Your request for <b>{myReq.name}</b> is waiting for admin review.
+          </div>
+        </div>
+      )}
+      {myReq && myReq.status === "rejected" && (
+        <div className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+          <div className="font-medium">Request rejected</div>
+          {myReq.admin_notes && <div className="text-muted-foreground mt-1">Reason: {myReq.admin_notes}</div>}
+          <div className="text-muted-foreground mt-1">You can submit a new request below.</div>
+        </div>
+      )}
+      {(!myReq || myReq.status === "rejected") && (
       <form className="mt-6 space-y-4 rounded-2xl border border-border/60 bg-card p-6" onSubmit={submit}>
         <Field label="Business name" required>
           <input required value={name} onChange={(e) => setName(e.target.value)}
