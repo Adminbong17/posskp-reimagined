@@ -20,6 +20,7 @@ import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRepairRouteImport } from './routes/_authenticated/repair'
+import { Route as AuthenticatedQuickBoxRouteImport } from './routes/_authenticated/quick-box'
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
 import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/pos'
@@ -121,6 +122,11 @@ const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
 const AuthenticatedRepairRoute = AuthenticatedRepairRouteImport.update({
   id: '/repair',
   path: '/repair',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedQuickBoxRoute = AuthenticatedQuickBoxRouteImport.update({
+  id: '/quick-box',
+  path: '/quick-box',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPurchasesRoute = AuthenticatedPurchasesRouteImport.update({
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/pos': typeof AuthenticatedPosRoute
   '/products': typeof AuthenticatedProductsRouteWithChildren
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
+  '/quick-box': typeof AuthenticatedQuickBoxRoute
   '/repair': typeof AuthenticatedRepairRouteWithChildren
   '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
@@ -459,6 +466,7 @@ export interface FileRoutesByTo {
   '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
+  '/quick-box': typeof AuthenticatedQuickBoxRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/setup': typeof AuthenticatedSetupRoute
   '/stock-transfers': typeof AuthenticatedStockTransfersRoute
@@ -516,6 +524,7 @@ export interface FileRoutesById {
   '/_authenticated/pos': typeof AuthenticatedPosRoute
   '/_authenticated/products': typeof AuthenticatedProductsRouteWithChildren
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRouteWithChildren
+  '/_authenticated/quick-box': typeof AuthenticatedQuickBoxRoute
   '/_authenticated/repair': typeof AuthenticatedRepairRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/products'
     | '/purchases'
+    | '/quick-box'
     | '/repair'
     | '/reports'
     | '/restaurant'
@@ -633,6 +643,7 @@ export interface FileRouteTypes {
     | '/manufacturing'
     | '/pos'
     | '/purchases'
+    | '/quick-box'
     | '/sales'
     | '/setup'
     | '/stock-transfers'
@@ -689,6 +700,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pos'
     | '/_authenticated/products'
     | '/_authenticated/purchases'
+    | '/_authenticated/quick-box'
     | '/_authenticated/repair'
     | '/_authenticated/reports'
     | '/_authenticated/restaurant'
@@ -819,6 +831,13 @@ declare module '@tanstack/react-router' {
       path: '/repair'
       fullPath: '/repair'
       preLoaderRoute: typeof AuthenticatedRepairRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quick-box': {
+      id: '/_authenticated/quick-box'
+      path: '/quick-box'
+      fullPath: '/quick-box'
+      preLoaderRoute: typeof AuthenticatedQuickBoxRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/purchases': {
@@ -1329,6 +1348,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPosRoute: typeof AuthenticatedPosRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRouteWithChildren
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRouteWithChildren
+  AuthenticatedQuickBoxRoute: typeof AuthenticatedQuickBoxRoute
   AuthenticatedRepairRoute: typeof AuthenticatedRepairRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedRestaurantRoute: typeof AuthenticatedRestaurantRouteWithChildren
@@ -1352,6 +1372,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPosRoute: AuthenticatedPosRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRouteWithChildren,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRouteWithChildren,
+  AuthenticatedQuickBoxRoute: AuthenticatedQuickBoxRoute,
   AuthenticatedRepairRoute: AuthenticatedRepairRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedRestaurantRoute: AuthenticatedRestaurantRouteWithChildren,
