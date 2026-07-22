@@ -487,9 +487,9 @@ function NewPurchasePage() {
                 </label>
                 {l.previous_purchase_price != null && (
                   <div className="text-[11px] text-muted-foreground flex gap-2 flex-wrap">
-                    <button type="button" className="underline hover:text-foreground" onClick={() => setPrice(idx, String(l.previous_purchase_price))}>Prev: {fmt(l.previous_purchase_price)}</button>
+                    <button type="button" className="underline hover:text-foreground" onClick={() => setPrice(idx, String((l.previous_purchase_price ?? 0) * (l.unit === "box" ? ps : 1)))}>Prev: {fmt((l.previous_purchase_price ?? 0) * (l.unit === "box" ? ps : 1))}</button>
                     {Number(l.purchase_price) > 0 && (
-                      <button type="button" className="underline hover:text-foreground" onClick={() => setPrice(idx, ((Number(l.purchase_price) + Number(l.previous_purchase_price!)) / 2).toFixed(2))}>Avg: {fmt((Number(l.purchase_price) + Number(l.previous_purchase_price)) / 2)}</button>
+                      <button type="button" className="underline hover:text-foreground" onClick={() => setPrice(idx, ((Number(l.purchase_price) + (l.previous_purchase_price ?? 0) * (l.unit === "box" ? ps : 1)) / 2).toFixed(2))}>Avg: {fmt((Number(l.purchase_price) + (l.previous_purchase_price ?? 0) * (l.unit === "box" ? ps : 1)) / 2)}</button>
                     )}
                   </div>
                 )}
