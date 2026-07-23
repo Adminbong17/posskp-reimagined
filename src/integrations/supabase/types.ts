@@ -3003,12 +3003,14 @@ export type Database = {
         Returns: string
       }
       create_purchase: { Args: { _payload: Json }; Returns: string }
+      create_stock_adjustment: { Args: { _payload: Json }; Returns: string }
       create_stock_transfer: { Args: { _payload: Json }; Returns: string }
       current_user_role_name: {
         Args: { _business_id: string }
         Returns: string
       }
       delete_sale: { Args: { _id: string }; Returns: undefined }
+      delete_stock_adjustment: { Args: { _id: string }; Returns: undefined }
       delete_stock_transfer: { Args: { _id: string }; Returns: undefined }
       has_permission: {
         Args: { _business_id: string; _permission: string; _user_id: string }
