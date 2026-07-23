@@ -92,7 +92,7 @@ function PosScreen() {
           .select(`
             id, name, sku, image, barcode,
             variations:variations!variations_product_id_fkey(
-              id, name, sub_sku, barcode, default_sell_price,
+              id, name, sub_sku, barcode, default_sell_price, mrp,
               variation_location_details(qty_available, location_id)
             )
           `)
@@ -131,7 +131,7 @@ function PosScreen() {
           variant_label: hasVariant ? v.name : null,
           sub_sku: v.sub_sku || p.sku || "",
           barcode: (v.barcode || p.barcode || "") as string,
-          price: Number(v.default_sell_price ?? 0),
+          price: Number(v.mrp ?? v.default_sell_price ?? 0),
           stock: vld ? Number(vld.qty_available) : 0,
           image: p.image,
         });
