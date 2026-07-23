@@ -232,6 +232,34 @@ function NewPurchasePage() {
         await supabase.from("variations").update({ mrp: u.mrp }).eq("id", u.id);
       }
 
+      // Sync latest purchase price + MRP back to products and variations so that
+      // the Products list (which reads from products.mrp / default_purchase_price)
+      // stays in sync with the most recent purchase.
+      const seenProducts = new Set<string>();
+      const seenVariations = new Set<string>();
+      for (const l of lines) {
+        const ps = Math.max(1, Math.floor(Number(l.pack_size || 1)));
+        const mult = l.unit === "box" ? ps : 1;
+        const perPcsPrice = Number(l.purchase_price || 0) / (mult || 1);
+        const mrpVal = Number(l.mrp || 0);
+        if (!seenVariations.has(l.variation_id) && perPcsPrice > 0) {
+          seenVariations.add(l.variation_id);
+          await supabase
+            .from("variations")
+            .update({ default_purchase_price: perPcsPrice, dpp_inc_tax: perPcsPrice })
+            .eq("id", l.variation_id);
+        }
+        if (!seenProducts.has(l.product_id)) {
+          seenProducts.add(l.product_id);
+          const patch: { default_purchase_price?: number; mrp?: number } = {};
+          if (perPcsPrice > 0) patch.default_purchase_price = perPcsPrice;
+          if (mrpVal > 0) patch.mrp = mrpVal;
+          if (Object.keys(patch).length > 0) {
+            await supabase.from("products").update(patch).eq("id", l.product_id);
+          }
+        }
+      }
+
       const { data, error } = await supabase.rpc("create_purchase" as any, {
         _payload: {
           business_id: business.id,
