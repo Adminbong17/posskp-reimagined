@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ type Line = {
 
 
 function EditPurchasePage() {
+  const qc = useQueryClient();
   const { id } = Route.useParams();
   const { data: business } = useCurrentBusiness();
   const navigate = useNavigate();
@@ -254,6 +255,7 @@ function EditPurchasePage() {
     },
     onSuccess: () => {
       toast.success("Purchase updated");
+      qc.invalidateQueries();
       navigate({ to: "/purchases/$id", params: { id } });
     },
     onError: (e: any) => toast.error(e.message ?? "Failed to update"),
