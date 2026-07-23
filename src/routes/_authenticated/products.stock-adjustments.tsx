@@ -46,39 +46,12 @@ function StockAdjustments() {
 
   const del = useMutation({
     mutationFn: async (row: any) => {
-      // Fetch lines to reverse stock
-      const { data: lines, error: lerr } = await supabase
-        .from("stock_adjustment_lines")
-        .select("variation_id, product_id, quantity")
-        .eq("stock_adjustment_id", row.id);
-      if (lerr) throw lerr;
-
-      // Reverse: normal(+) added → subtract; abnormal(-) removed → add back
-      const sign = row.adjustment_type === "normal" ? -1 : 1;
-      for (const l of lines ?? []) {
-        const delta = sign * Number(l.quantity);
-        const { data: existing } = await supabase
-          .from("variation_location_details")
-          .select("id, qty_available")
-          .eq("variation_id", l.variation_id)
-          .eq("location_id", row.location_id)
-          .maybeSingle();
-        if (existing) {
-          await supabase.from("variation_location_details").update({
-            qty_available: Number(existing.qty_available) + delta,
-          }).eq("id", existing.id);
-        }
-      }
-
-      await supabase.from("stock_adjustment_lines").delete().eq("stock_adjustment_id", row.id);
-      const { error } = await supabase.from("stock_adjustments").delete().eq("id", row.id);
+      const { error } = await supabase.rpc("delete_stock_adjustment", { _id: row.id });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Adjustment deleted");
-      qc.invalidateQueries({ queryKey: ["stock-adjustments"] });
-      qc.invalidateQueries({ queryKey: ["products"] });
-      qc.invalidateQueries({ queryKey: ["pos-products"] });
+      qc.invalidateQueries();
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -416,52 +389,27 @@ function AdjustmentForm({ onClose, onSaved }: { onClose: () => void; onSaved: ()
       if (!locationId) throw new Error("Pick a location");
       if (lines.length === 0) throw new Error("Add at least one line");
 
-      const refNo = `SA${Date.now().toString().slice(-8)}`;
-      const { data: header, error } = await supabase.from("stock_adjustments").insert({
-        business_id: business.id,
-        location_id: locationId,
-        ref_no: refNo,
-        adjustment_type: type,
-        reason: reason || null,
-        total_amount: total,
-      }).select("id").single();
+      const invalidLine = lines.find((line) => !line.product_id || !line.variation_id || !Number.isFinite(line.quantity) || line.quantity <= 0);
+      if (invalidLine) throw new Error("Select a product and enter a quantity greater than zero");
+
+      const { error } = await supabase.rpc("create_stock_adjustment", {
+        _payload: {
+          business_id: business.id,
+          location_id: locationId,
+          ref_no: `SA${Date.now().toString().slice(-8)}`,
+          adjustment_type: type,
+          reason: reason || null,
+          lines,
+        },
+      });
       if (error) throw error;
-
-      const lineRows = lines.map((l) => ({
-        stock_adjustment_id: header.id,
-        product_id: l.product_id,
-        variation_id: l.variation_id,
-        quantity: l.quantity,
-        unit_price: l.unit_price,
-      }));
-      const { error: lerr } = await supabase.from("stock_adjustment_lines").insert(lineRows);
-      if (lerr) throw lerr;
-
-      // Adjust stock per variation: "normal" (Add) → +qty, "abnormal" (Minus) → -qty
-      const sign = type === "normal" ? 1 : -1;
-      for (const l of lines) {
-        const delta = sign * l.quantity;
-        const { data: existing } = await supabase
-          .from("variation_location_details")
-          .select("id, qty_available")
-          .eq("variation_id", l.variation_id)
-          .eq("location_id", locationId)
-          .maybeSingle();
-        if (existing) {
-          await supabase.from("variation_location_details").update({
-            qty_available: Number(existing.qty_available) + delta,
-          }).eq("id", existing.id);
-        } else {
-          await supabase.from("variation_location_details").insert({
-            product_id: l.product_id,
-            variation_id: l.variation_id,
-            location_id: locationId,
-            qty_available: delta,
-          });
-        }
-      }
     },
-    onSuccess: () => { toast.success("Adjustment saved"); onSaved(); onClose(); },
+    onSuccess: () => {
+      toast.success("Adjustment saved and stock updated");
+      qc.invalidateQueries();
+      onSaved();
+      onClose();
+    },
     onError: (e: any) => toast.error(e.message),
   });
 
