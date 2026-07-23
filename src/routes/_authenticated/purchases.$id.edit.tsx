@@ -28,6 +28,7 @@ type Line = {
 
 
 function EditPurchasePage() {
+  const qc = useQueryClient();
   const { id } = Route.useParams();
   const { data: business } = useCurrentBusiness();
   const navigate = useNavigate();
@@ -254,6 +255,7 @@ function EditPurchasePage() {
     },
     onSuccess: () => {
       toast.success("Purchase updated");
+      qc.invalidateQueries();
       navigate({ to: "/purchases/$id", params: { id } });
     },
     onError: (e: any) => toast.error(e.message ?? "Failed to update"),
