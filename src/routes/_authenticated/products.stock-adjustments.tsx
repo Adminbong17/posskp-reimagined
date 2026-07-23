@@ -283,6 +283,7 @@ function escapeHtml(s: string) {
 
 function AdjustmentForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const { data: business } = useCurrentBusiness();
+  const qc = useQueryClient();
   const [locationId, setLocationId] = useState("");
   const [type, setType] = useState<"normal" | "abnormal">("normal");
   const [reason, setReason] = useState("");
