@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentBusiness } from "@/hooks/use-current-business";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ type Line = {
 function NewPurchasePage() {
   const { data: business } = useCurrentBusiness();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const [locationId, setLocationId] = useState("");
   const [supplierName, setSupplierName] = useState("");
@@ -248,6 +249,7 @@ function NewPurchasePage() {
     },
     onSuccess: () => {
       toast.success("Purchase saved");
+      qc.invalidateQueries();
       navigate({ to: "/purchases" });
     },
     onError: (e: any) => toast.error(e.message ?? "Failed to save purchase"),
