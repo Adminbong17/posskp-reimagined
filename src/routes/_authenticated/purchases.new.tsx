@@ -251,7 +251,7 @@ function NewPurchasePage() {
         }
         if (!seenProducts.has(l.product_id)) {
           seenProducts.add(l.product_id);
-          const patch: Record<string, number> = {};
+          const patch: { default_purchase_price?: number; mrp?: number } = {};
           if (perPcsPrice > 0) patch.default_purchase_price = perPcsPrice;
           if (mrpVal > 0) patch.mrp = mrpVal;
           if (Object.keys(patch).length > 0) {
