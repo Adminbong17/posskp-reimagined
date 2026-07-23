@@ -26,6 +26,8 @@ type Line = {
   unit: "pcs" | "box";
   pack_size: string;
   original_pack_size: number;
+  mrp: string;
+  original_mrp: number;
 };
 
 
@@ -69,7 +71,7 @@ function NewPurchasePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, sku, variations(id, name, default_purchase_price, pack_size)")
+        .select("id, name, sku, variations(id, name, default_purchase_price, pack_size, mrp)")
         .eq("business_id", business!.id)
         .or(`name.ilike.%${search}%,sku.ilike.%${search}%,barcode.ilike.%${search}%`)
         .order("created_at", { ascending: false })
@@ -94,6 +96,7 @@ function NewPurchasePage() {
       if (data?.purchase_price != null) lastPrice = Number(data.purchase_price);
     } catch {}
     const ps = Number(variation.pack_size ?? 1) || 1;
+    const mrpVal = Number(variation.mrp ?? 0) || 0;
     setLines((prev) => [
       ...prev,
       {
@@ -108,6 +111,8 @@ function NewPurchasePage() {
         unit: ps > 1 ? "box" : "pcs",
         pack_size: String(ps),
         original_pack_size: ps,
+        mrp: mrpVal ? String(mrpVal) : "",
+        original_mrp: mrpVal,
       },
     ]);
     setSearch("");
@@ -118,7 +123,7 @@ function NewPurchasePage() {
     if (!trimmed || !business) return;
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, sku, variations(id, name, default_purchase_price, pack_size)")
+      .select("id, name, sku, variations(id, name, default_purchase_price, pack_size, mrp)")
       .eq("business_id", business.id)
       .or(`barcode.eq.${trimmed},sku.eq.${trimmed}`)
       .limit(1);
@@ -217,6 +222,14 @@ function NewPurchasePage() {
         .filter((x, i, arr) => x.ps !== lines[i].original_pack_size && arr.findIndex((y) => y.id === x.id) === i);
       for (const u of packUpdates) {
         await supabase.from("variations").update({ pack_size: u.ps }).eq("id", u.id);
+      }
+
+      // Persist any changed MRP values back to variations
+      const mrpUpdates = lines
+        .map((l) => ({ id: l.variation_id, mrp: Number(l.mrp || 0) }))
+        .filter((x, i, arr) => x.mrp !== lines[i].original_mrp && arr.findIndex((y) => y.id === x.id) === i);
+      for (const u of mrpUpdates) {
+        await supabase.from("variations").update({ mrp: u.mrp }).eq("id", u.id);
       }
 
       const { data, error } = await supabase.rpc("create_purchase" as any, {
