@@ -15,7 +15,6 @@ type Variation = {
   sub_sku: string;
   barcode: string;
   default_purchase_price: number;
-  default_sell_price: number;
   mrp: number;
   pack_size: number;
 };
@@ -80,12 +79,11 @@ export function ProductForm({ productId }: Props) {
   const [notForSelling, setNotForSelling] = useState(false);
   const [description, setDescription] = useState("");
   const [purchasePrice, setPurchasePrice] = useState<number>(0);
-  const [sellPrice, setSellPrice] = useState<number>(0);
   const [mrp, setMrp] = useState<number>(0);
   const [barcode, setBarcode] = useState<string>("");
   const [scanTarget, setScanTarget] = useState<null | { kind: "main" } | { kind: "variation"; idx: number }>(null);
   const [variations, setVariations] = useState<Variation[]>([
-    { name: "DUMMY", sub_sku: "", barcode: "", default_purchase_price: 0, default_sell_price: 0, mrp: 0, pack_size: 1 },
+    { name: "DUMMY", sub_sku: "", barcode: "", default_purchase_price: 0, mrp: 0, pack_size: 1 },
   ]);
   const [image, setImage] = useState<string>("");
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -121,8 +119,7 @@ export function ProductForm({ productId }: Props) {
     setNotForSelling(!!existing.not_for_selling);
     setDescription(existing.description ?? "");
     setPurchasePrice(Number(existing.default_purchase_price ?? 0));
-    setSellPrice(Number(existing.default_sell_price ?? 0));
-    setMrp(Number(existing.mrp ?? 0));
+    setMrp(Number(existing.mrp ?? existing.default_sell_price ?? 0));
     setBarcode((existing as any).barcode ?? "");
     setImage((existing as any).image ?? "");
     if (existing.variations?.length) {
@@ -132,8 +129,7 @@ export function ProductForm({ productId }: Props) {
         sub_sku: v.sub_sku ?? "",
         barcode: v.barcode ?? "",
         default_purchase_price: Number(v.default_purchase_price ?? 0),
-        default_sell_price: Number(v.default_sell_price ?? 0),
-        mrp: Number(v.mrp ?? 0),
+        mrp: Number(v.mrp ?? v.default_sell_price ?? 0),
         pack_size: Number(v.pack_size ?? 1) || 1,
       })));
     }
@@ -150,7 +146,7 @@ export function ProductForm({ productId }: Props) {
   const showVariations = type === "variable";
 
   function addVariation() {
-    setVariations((v) => [...v, { name: "", sub_sku: "", barcode: "", default_purchase_price: 0, default_sell_price: 0, mrp: 0, pack_size: 1 }]);
+    setVariations((v) => [...v, { name: "", sub_sku: "", barcode: "", default_purchase_price: 0, mrp: 0, pack_size: 1 }]);
   }
   function removeVariation(idx: number) {
     setVariations((v) => v.filter((_, i) => i !== idx));
@@ -176,7 +172,7 @@ export function ProductForm({ productId }: Props) {
         not_for_selling: notForSelling,
         description: description || null,
         default_purchase_price: purchasePrice,
-        default_sell_price: sellPrice,
+        default_sell_price: mrp,
         mrp: mrp,
         barcode: barcode || null,
         image: image || null,
@@ -195,7 +191,7 @@ export function ProductForm({ productId }: Props) {
       // Variations
       const rows = showVariations
         ? variations
-        : [{ ...(variations[0] ?? { name: "DUMMY", sub_sku: "", barcode: "", pack_size: 1 }), name: "DUMMY", sub_sku: sku, barcode: barcode || "", default_purchase_price: purchasePrice, default_sell_price: sellPrice, mrp: mrp, pack_size: variations[0]?.pack_size ?? 1 }];
+        : [{ ...(variations[0] ?? { name: "DUMMY", sub_sku: "", barcode: "", pack_size: 1 }), name: "DUMMY", sub_sku: sku, barcode: barcode || "", default_purchase_price: purchasePrice, mrp: mrp, pack_size: variations[0]?.pack_size ?? 1 }];
       // delete removed
       if (productId) {
         const keepIds = rows.filter((v) => v.id).map((v) => v.id!);
@@ -213,12 +209,12 @@ export function ProductForm({ productId }: Props) {
           barcode: v.barcode || null,
           default_purchase_price: v.default_purchase_price,
           dpp_inc_tax: v.default_purchase_price,
-          default_sell_price: v.default_sell_price,
-          sell_price_inc_tax: v.default_sell_price,
+          default_sell_price: v.mrp,
+          sell_price_inc_tax: v.mrp,
           mrp: v.mrp,
           pack_size: Math.max(1, Math.floor(Number(v.pack_size || 1))),
           profit_percent: v.default_purchase_price > 0
-            ? ((v.default_sell_price - v.default_purchase_price) / v.default_purchase_price) * 100
+            ? ((v.mrp - v.default_purchase_price) / v.default_purchase_price) * 100
             : 0,
         };
         if (v.id) {
@@ -310,10 +306,6 @@ export function ProductForm({ productId }: Props) {
           <label className="block">
             <span className={labelCls}>Purchase price</span>
             <input className={inputCls} type="number" step="any" value={purchasePrice} onChange={(e) => setPurchasePrice(Number(e.target.value) || 0)} />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Selling price</span>
-            <input className={inputCls} type="number" step="any" value={sellPrice} onChange={(e) => setSellPrice(Number(e.target.value) || 0)} />
           </label>
           <label className="block">
             <span className={labelCls}>MRP</span>
@@ -425,11 +417,7 @@ export function ProductForm({ productId }: Props) {
                 <span className={labelCls}>Purchase price</span>
                 <input className={inputCls} type="number" step="any" value={v.default_purchase_price} onChange={(e) => updateVariation(idx, { default_purchase_price: Number(e.target.value) })} />
               </label>
-              <label className={`block ${showVariations ? "sm:col-span-2" : "sm:col-span-3"}`}>
-                <span className={labelCls}>Sell price</span>
-                <input className={inputCls} type="number" step="any" value={v.default_sell_price} onChange={(e) => updateVariation(idx, { default_sell_price: Number(e.target.value) })} />
-              </label>
-              <label className={`block ${showVariations ? "sm:col-span-2" : "sm:col-span-3"}`}>
+              <label className={`block ${showVariations ? "sm:col-span-3" : "sm:col-span-3"}`}>
                 <span className={labelCls}>MRP</span>
                 <input className={inputCls} type="number" step="any" value={v.mrp} onChange={(e) => updateVariation(idx, { mrp: Number(e.target.value) })} />
               </label>
