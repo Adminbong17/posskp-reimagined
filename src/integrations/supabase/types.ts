@@ -1586,6 +1586,177 @@ export type Database = {
           },
         ]
       }
+      prescription_lines: {
+        Row: {
+          created_at: string
+          dose: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          instructions: string | null
+          medicine_name: string
+          prescription_id: string
+          product_id: string | null
+          quantity: number
+          sort_order: number
+          updated_at: string
+          variation_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dose?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medicine_name: string
+          prescription_id: string
+          product_id?: string | null
+          quantity?: number
+          sort_order?: number
+          updated_at?: string
+          variation_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dose?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medicine_name?: string
+          prescription_id?: string
+          product_id?: string | null
+          quantity?: number
+          sort_order?: number
+          updated_at?: string
+          variation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_lines_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescription_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescription_lines_variation_id_fkey"
+            columns: ["variation_id"]
+            isOneToOne: false
+            referencedRelation: "variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          advice: string | null
+          business_id: string
+          contact_id: string | null
+          created_at: string
+          created_by: string | null
+          diagnosis: string | null
+          doctor_name: string | null
+          doctor_qualification: string | null
+          id: string
+          location_id: string | null
+          next_visit: string | null
+          notes: string | null
+          patient_age: string | null
+          patient_gender: string | null
+          patient_name: string
+          patient_phone: string | null
+          rx_date: string
+          rx_no: string | null
+          sale_id: string | null
+          updated_at: string
+          vitals: string | null
+        }
+        Insert: {
+          advice?: string | null
+          business_id: string
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          doctor_name?: string | null
+          doctor_qualification?: string | null
+          id?: string
+          location_id?: string | null
+          next_visit?: string | null
+          notes?: string | null
+          patient_age?: string | null
+          patient_gender?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          rx_date?: string
+          rx_no?: string | null
+          sale_id?: string | null
+          updated_at?: string
+          vitals?: string | null
+        }
+        Update: {
+          advice?: string | null
+          business_id?: string
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          doctor_name?: string | null
+          doctor_qualification?: string | null
+          id?: string
+          location_id?: string | null
+          next_visit?: string | null
+          notes?: string | null
+          patient_age?: string | null
+          patient_gender?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          rx_date?: string
+          rx_no?: string | null
+          sale_id?: string | null
+          updated_at?: string
+          vitals?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "business_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_variations: {
         Row: {
           created_at: string
