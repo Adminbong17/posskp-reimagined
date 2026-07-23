@@ -79,7 +79,7 @@ function EditSalePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, sku, variations(id, name, default_sell_price)")
+        .select("id, name, sku, variations(id, name, default_sell_price, mrp)")
         .eq("business_id", business!.id)
         .or(`name.ilike.%${search}%,sku.ilike.%${search}%,barcode.ilike.%${search}%`)
         .order("created_at", { ascending: false })
@@ -90,7 +90,7 @@ function EditSalePage() {
   });
 
   function addLine(product: any, variation: any) {
-    const price = Number(variation.default_sell_price ?? 0);
+    const price = Number(variation.mrp ?? variation.default_sell_price ?? 0);
     setLines((prev) => [
       ...prev,
       {
