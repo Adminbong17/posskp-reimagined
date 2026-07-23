@@ -125,13 +125,12 @@ function PrescriptionsPage() {
     queryKey: ["rx-products", businessId],
     enabled: !!businessId && open,
     queryFn: async () => {
-      const rows = await fetchAll<any>((from, to) =>
+      const rows = await fetchAll<any>(() =>
         supabase.from("products")
           .select("id, name, variations(id)")
           .eq("business_id", businessId!)
           .eq("is_inactive", false)
-          .order("name")
-          .range(from, to),
+          .order("name"),
       );
       const opts: ProductOpt[] = [];
       for (const p of rows) {
