@@ -13,9 +13,10 @@ export const ALL_SECTIONS: { key: string; label: string; path: string }[] = [
   { key: "contacts", label: "Contacts", path: "/contacts" },
   { key: "reports", label: "Reports", path: "/reports" },
   { key: "settings", label: "Settings", path: "/settings" },
+  { key: "quick-box", label: "Quick Box Add", path: "/quick-box" },
 ];
 
-const DEFAULT_SALESMAN = ["pos", "purchases"];
+const DEFAULT_SALESMAN = ["pos", "purchases", "quick-box"];
 
 export function useAllowedSections() {
   const { data: business } = useCurrentBusiness();
