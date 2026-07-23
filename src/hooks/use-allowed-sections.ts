@@ -14,6 +14,7 @@ export const ALL_SECTIONS: { key: string; label: string; path: string }[] = [
   { key: "reports", label: "Reports", path: "/reports" },
   { key: "settings", label: "Settings", path: "/settings" },
   { key: "quick-box", label: "Quick Box Add", path: "/quick-box" },
+  { key: "prescriptions", label: "Prescriptions", path: "/prescriptions" },
 ];
 
 const DEFAULT_SALESMAN = ["pos", "purchases", "quick-box"];
