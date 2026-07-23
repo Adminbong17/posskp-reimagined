@@ -476,6 +476,17 @@ function NewPurchasePage() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
+                <div className="flex items-center gap-1 rounded border border-red-500 bg-red-500/10 px-2 py-1 text-xs">
+                  <span className="font-semibold text-red-600 dark:text-red-400">MRP</span>
+                  <input
+                    type="number"
+                    step="any"
+                    placeholder="0.00"
+                    className="flex-1 h-7 bg-transparent px-1 text-right font-semibold text-red-600 dark:text-red-400 outline-none"
+                    value={l.mrp}
+                    onChange={(e) => updateLine(idx, { mrp: e.target.value })}
+                  />
+                </div>
                 <div className="flex items-center gap-2 text-xs">
                   <button type="button" onClick={() => updateLine(idx, { unit: "pcs" })} className={`flex-1 h-8 rounded border ${l.unit === "pcs" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}>Pcs</button>
                   <button type="button" onClick={() => updateLine(idx, { unit: "box" })} className={`flex-1 h-8 rounded border ${l.unit === "box" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}>Box</button>
