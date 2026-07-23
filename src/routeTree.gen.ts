@@ -23,6 +23,7 @@ import { Route as AuthenticatedRepairRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedQuickBoxRouteImport } from './routes/_authenticated/quick-box'
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
+import { Route as AuthenticatedPrescriptionsRouteImport } from './routes/_authenticated/prescriptions'
 import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/pos'
 import { Route as AuthenticatedManufacturingRouteImport } from './routes/_authenticated/manufacturing'
 import { Route as AuthenticatedHrmRouteImport } from './routes/_authenticated/hrm'
@@ -139,6 +140,12 @@ const AuthenticatedProductsRoute = AuthenticatedProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPrescriptionsRoute =
+  AuthenticatedPrescriptionsRouteImport.update({
+    id: '/prescriptions',
+    path: '/prescriptions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPosRoute = AuthenticatedPosRouteImport.update({
   id: '/pos',
   path: '/pos',
@@ -407,6 +414,7 @@ export interface FileRoutesByFullPath {
   '/hrm': typeof AuthenticatedHrmRouteWithChildren
   '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
+  '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/products': typeof AuthenticatedProductsRouteWithChildren
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
   '/quick-box': typeof AuthenticatedQuickBoxRoute
@@ -465,6 +473,7 @@ export interface FileRoutesByTo {
   '/files': typeof AuthenticatedFilesRoute
   '/manufacturing': typeof AuthenticatedManufacturingRoute
   '/pos': typeof AuthenticatedPosRoute
+  '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/purchases': typeof AuthenticatedPurchasesRouteWithChildren
   '/quick-box': typeof AuthenticatedQuickBoxRoute
   '/sales': typeof AuthenticatedSalesRoute
@@ -522,6 +531,7 @@ export interface FileRoutesById {
   '/_authenticated/hrm': typeof AuthenticatedHrmRouteWithChildren
   '/_authenticated/manufacturing': typeof AuthenticatedManufacturingRoute
   '/_authenticated/pos': typeof AuthenticatedPosRoute
+  '/_authenticated/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/_authenticated/products': typeof AuthenticatedProductsRouteWithChildren
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRouteWithChildren
   '/_authenticated/quick-box': typeof AuthenticatedQuickBoxRoute
@@ -584,6 +594,7 @@ export interface FileRouteTypes {
     | '/hrm'
     | '/manufacturing'
     | '/pos'
+    | '/prescriptions'
     | '/products'
     | '/purchases'
     | '/quick-box'
@@ -642,6 +653,7 @@ export interface FileRouteTypes {
     | '/files'
     | '/manufacturing'
     | '/pos'
+    | '/prescriptions'
     | '/purchases'
     | '/quick-box'
     | '/sales'
@@ -698,6 +710,7 @@ export interface FileRouteTypes {
     | '/_authenticated/hrm'
     | '/_authenticated/manufacturing'
     | '/_authenticated/pos'
+    | '/_authenticated/prescriptions'
     | '/_authenticated/products'
     | '/_authenticated/purchases'
     | '/_authenticated/quick-box'
@@ -852,6 +865,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof AuthenticatedProductsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/prescriptions': {
+      id: '/_authenticated/prescriptions'
+      path: '/prescriptions'
+      fullPath: '/prescriptions'
+      preLoaderRoute: typeof AuthenticatedPrescriptionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pos': {
@@ -1346,6 +1366,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHrmRoute: typeof AuthenticatedHrmRouteWithChildren
   AuthenticatedManufacturingRoute: typeof AuthenticatedManufacturingRoute
   AuthenticatedPosRoute: typeof AuthenticatedPosRoute
+  AuthenticatedPrescriptionsRoute: typeof AuthenticatedPrescriptionsRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRouteWithChildren
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRouteWithChildren
   AuthenticatedQuickBoxRoute: typeof AuthenticatedQuickBoxRoute
@@ -1370,6 +1391,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHrmRoute: AuthenticatedHrmRouteWithChildren,
   AuthenticatedManufacturingRoute: AuthenticatedManufacturingRoute,
   AuthenticatedPosRoute: AuthenticatedPosRoute,
+  AuthenticatedPrescriptionsRoute: AuthenticatedPrescriptionsRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRouteWithChildren,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRouteWithChildren,
   AuthenticatedQuickBoxRoute: AuthenticatedQuickBoxRoute,

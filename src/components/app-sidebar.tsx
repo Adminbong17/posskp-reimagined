@@ -6,7 +6,7 @@ import {
 import {
   LayoutDashboard, ShoppingCart, Package, Users, Truck, BarChart3,
   Receipt, Wallet, Settings, Factory, UtensilsCrossed, Wrench, HeartHandshake,
-  Building2, ClipboardList, BookOpen, UserCog, FolderArchive, Boxes, PackagePlus,
+  Building2, ClipboardList, BookOpen, UserCog, FolderArchive, Boxes, PackagePlus, FileText,
 } from "lucide-react";
 import { useAllowedSections } from "@/hooks/use-allowed-sections";
 
@@ -53,6 +53,7 @@ const sections = [
       { to: "/repair", label: "Repair", icon: Wrench, enabled: true, key: "repair" },
       { to: "/crm", label: "CRM", icon: HeartHandshake, enabled: true, key: "crm" },
       { to: "/hrm", label: "HRM", icon: Users, enabled: true, key: "hrm" },
+      { to: "/prescriptions", label: "Prescriptions", icon: FileText, enabled: true, key: "prescriptions" },
     ],
   },
   {
