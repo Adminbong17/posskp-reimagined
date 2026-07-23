@@ -404,6 +404,17 @@ function NewPurchasePage() {
                           <span className="text-muted-foreground">= {totalPcs} pcs</span>
                         )}
                       </div>
+                      <div className="mt-1 inline-flex items-center gap-1 rounded border border-red-500 bg-red-500/10 px-1.5 py-0.5 text-[11px]">
+                        <span className="font-semibold text-red-600 dark:text-red-400">MRP</span>
+                        <input
+                          type="number"
+                          step="any"
+                          placeholder="0.00"
+                          className="w-20 h-6 bg-transparent px-1 text-xs text-right font-semibold text-red-600 dark:text-red-400 outline-none"
+                          value={l.mrp}
+                          onChange={(e) => updateLine(idx, { mrp: e.target.value })}
+                        />
+                      </div>
                     </td>
                     <td className="p-2">
                       <input type="number" step="any" placeholder="Qty" className={inputCls + " text-right"} value={l.quantity} onChange={(e) => setQty(idx, e.target.value)} />
